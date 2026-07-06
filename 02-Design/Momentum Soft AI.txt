@@ -1,0 +1,26 @@
+Theme Name
+
+Momentum Soft AI
+
+Color Direction
+
+Background: #F5F7FB / #EEF2F8
+Cards: #FFFFFF with soft shadows
+Primary Text: #111827 / dark navy
+Secondary Text: #6B7280
+Primary CTA: Coral → Peach gradient
+AI Accent: Violet → Cyan gradient
+Success: Soft green
+Warning: Warm amber
+Borders: very soft light grey
+
+Design Feel
+
+Clean
+Soft
+Premium
+Modern
+Friendly
+AI-powered
+Production-level
+Top-app quality

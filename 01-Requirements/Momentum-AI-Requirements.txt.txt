@@ -1,0 +1,7 @@
+Project Name: Momentum AI
+Frontend: Flutter
+Backend: Node.js + Express.js
+Database: PostgreSQL
+Design: Premium AI productivity app
+Target Users: Entrepreneurs, freelancers, students, executives
+Main Feature: AI-first task and daily planning assistant

@@ -1,0 +1,199 @@
+## 1. Project Vision
+
+Momentum-AI is a premium AI-powered mobile application designed to help users build momentum in their daily goals, planning, habits, productivity, and personal progress.
+
+The app should feel modern, premium, clean, energetic, and human. It should not feel robotic or generic.
+
+Design inspiration can be taken from the Muscle Monster app style, but the final UI must be original.
+
+---
+
+## 2. Design Direction
+
+### Overall Feel
+- Premium mobile app
+- Dark modern UI
+- Energetic and bold visual style
+- Smooth cards and sections
+- Human-focused experience
+- Non-robotic AI feel
+- Clean layout with strong spacing
+
+### Visual Style
+- Dark background
+- Premium gradient highlights
+- Glassmorphism cards where needed
+- Bold typography
+- Rounded cards
+- Modern dashboard layout
+- Minimal but powerful icons
+- Smooth onboarding screens
+
+### Avoid
+- Boring AI chatbot look
+- Too much plain white UI
+- Overloaded screens
+- Cheap template-style design
+- Robotic AI visuals
+- Random colors
+
+---
+
+## 3. Technology Stack
+
+### Mobile App
+Framework: Flutter  
+Language: Dart  
+State Management: Riverpod  
+Routing: GoRouter  
+Local Storage: SharedPreferences / Flutter Secure Storage  
+HTTP Client: Dio  
+Architecture: Feature-based clean structure  
+
+### Backend
+Runtime: Node.js  
+Framework: Express.js  
+Database: PostgreSQL  
+ORM: Prisma  
+Authentication: JWT-based auth  
+Password Security: bcrypt  
+Validation: Zod / Joi  
+File Uploads: Cloudinary or AWS S3  
+API Style: REST API  
+
+### AI Integration
+AI Provider: OpenAI API or selected AI model  
+AI Usage:
+- Smart recommendations
+- Goal guidance
+- Personalized suggestions
+- AI assistant/chat if required later
+
+### Admin Panel
+Optional for later phase.
+
+---
+
+## 4. Main App Modules
+
+### 1. Authentication Module
+- Splash screen
+- Onboarding screens
+- Login
+- Signup
+- Forgot password
+- Profile setup
+
+### 2. Dashboard Module
+- User greeting
+- Daily momentum score
+- Goals summary
+- AI suggestion card
+- Quick actions
+- Progress cards
+
+### 3. Goals Module
+- Create goal
+- View goals
+- Update progress
+- Goal categories
+- Goal completion status
+
+### 4. AI Assistant Module
+- AI chat or AI guidance
+- Personalized recommendations
+- Smart planning suggestions
+- Daily improvement tips
+
+### 5. Habit / Progress Module
+- Daily habits
+- Completion tracking
+- Streaks
+- Progress charts
+
+### 6. Profile Module
+- User details
+- Preferences
+- Settings
+- Logout
+
+---
+
+## 5. Version 1 Screens
+
+### Required Screens for V1
+
+1. Splash Screen
+2. Onboarding Screen 1
+3. Onboarding Screen 2
+4. Onboarding Screen 3
+5. Login Screen
+6. Signup Screen
+7. Forgot Password Screen
+8. Profile Setup Screen
+9. Home Dashboard Screen
+10. Goals List Screen
+11. Add Goal Screen
+12. Goal Detail Screen
+13. AI Assistant Screen
+14. Progress / Stats Screen
+15. Profile Screen
+16. Settings Screen
+
+---
+
+## 6. Flutter App Folder Architecture
+
+Inside `04-Flutter-App`, the structure should be:
+
+```txt
+lib/
+│
+├── app/
+│   ├── app.dart
+│   ├── router.dart
+│   └── theme.dart
+│
+├── core/
+│   ├── constants/
+│   ├── errors/
+│   ├── network/
+│   ├── storage/
+│   ├── utils/
+│   └── widgets/
+│
+├── features/
+│   ├── auth/
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
+│   │
+│   ├── onboarding/
+│   │   └── presentation/
+│   │
+│   ├── dashboard/
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
+│   │
+│   ├── goals/
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
+│   │
+│   ├── ai_assistant/
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
+│   │
+│   ├── progress/
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
+│   │
+│   └── profile/
+│       ├── data/
+│       ├── domain/
+│       └── presentation/
+│
+└── main.dart

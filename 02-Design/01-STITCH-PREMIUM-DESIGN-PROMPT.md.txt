@@ -1,0 +1,251 @@
+# Momentum-AI - Stitch Premium Mobile App Design Prompt
+
+Create a premium production-level mobile app UI design for an AI-powered productivity and personal growth app named “Momentum-AI”.
+
+The app helps users build daily momentum by managing goals, habits, progress, and receiving AI-powered guidance.
+
+The design should feel premium, modern, energetic, human, and motivational. It should not look robotic, generic, boring, or like a basic chatbot app.
+
+Use inspiration from premium fitness/productivity apps like Muscle Monster, but do not copy any existing app. Create an original design system for Momentum-AI.
+
+## App Style
+
+Design style:
+- Premium dark mobile UI
+- Modern glassmorphism cards
+- Bold typography
+- Strong spacing
+- Rounded premium cards
+- Smooth gradients
+- Energetic but clean layout
+- Human-focused AI experience
+- Motivational dashboard
+- Professional production-ready interface
+
+## Color Direction
+
+Use a dark premium theme.
+
+Main colors:
+- Deep black / dark navy background
+- Electric blue accents
+- Neon purple highlights
+- Soft cyan glow
+- White text
+- Muted gray secondary text
+- Subtle gradient cards
+
+Avoid:
+- Flat white background
+- Cheap template colors
+- Too many random colors
+- Overly robotic AI blue-only design
+
+## Typography
+
+Use bold, modern, premium typography.
+
+Text should feel:
+- Clean
+- Confident
+- Motivational
+- Easy to read
+- Mobile-friendly
+
+Use strong headings and clean body text.
+
+## Required Screens
+
+Design these mobile app screens:
+
+1. Splash Screen
+2. Onboarding Screen 1
+3. Onboarding Screen 2
+4. Onboarding Screen 3
+5. Login Screen
+6. Signup Screen
+7. Home Dashboard Screen
+8. Goals Screen
+9. Add Goal Screen
+10. AI Assistant Screen
+11. Progress / Stats Screen
+12. Profile Screen
+
+## Screen Details
+
+### 1. Splash Screen
+Create a premium dark splash screen with the Momentum-AI logo text in the center. Add a subtle glowing gradient background. The screen should feel futuristic but not robotic.
+
+Text:
+Momentum-AI
+Build your daily momentum.
+
+### 2. Onboarding Screen 1
+Theme: Build momentum every day.
+
+Include premium illustration or abstract 3D visual showing progress, energy, or motion.
+
+Text:
+Build Momentum Every Day
+Turn your goals into daily action with AI-powered guidance.
+
+Button:
+Continue
+
+### 3. Onboarding Screen 2
+Theme: Smart AI guidance.
+
+Text:
+Your Personal AI Coach
+Get smart suggestions, daily plans, and focused recommendations.
+
+Button:
+Continue
+
+### 4. Onboarding Screen 3
+Theme: Track progress.
+
+Text:
+Track Growth Clearly
+Monitor goals, habits, streaks, and daily progress in one premium dashboard.
+
+Button:
+Get Started
+
+### 5. Login Screen
+Premium dark login screen.
+
+Fields:
+- Email
+- Password
+
+Buttons:
+- Login
+- Continue with Google
+
+Links:
+- Forgot Password?
+- Create Account
+
+### 6. Signup Screen
+Fields:
+- Full Name
+- Email
+- Password
+
+Buttons:
+- Create Account
+- Continue with Google
+
+### 7. Home Dashboard Screen
+This is the main screen and must look very premium.
+
+Include:
+- Greeting: Good Morning, Hamza
+- Daily Momentum Score card
+- AI Suggestion card
+- Today’s Goals section
+- Habit streak card
+- Quick actions
+- Bottom navigation bar
+
+Dashboard cards should feel like premium fitness/productivity app cards, similar energy to Muscle Monster, but original.
+
+Example sections:
+- Momentum Score: 78%
+- AI Insight: “Focus on your top 2 goals today.”
+- Today’s Goals: 3 active goals
+- Streak: 7 days
+
+### 8. Goals Screen
+Show list of goals in premium cards.
+
+Each goal card includes:
+- Goal title
+- Category
+- Progress bar
+- Due date
+- Status badge
+
+Add floating action button for adding new goal.
+
+### 9. Add Goal Screen
+Clean form screen.
+
+Fields:
+- Goal Title
+- Description
+- Category
+- Target Date
+- Priority
+
+Button:
+Create Goal
+
+### 10. AI Assistant Screen
+This screen should not look like a boring chatbot.
+
+Make it premium and friendly.
+
+Include:
+- AI assistant header
+- Suggested prompt chips
+- Chat messages
+- Input box
+- Send button
+
+Suggested chips:
+- Plan my day
+- Improve my focus
+- Review my goals
+- Give me motivation
+
+### 11. Progress / Stats Screen
+Include:
+- Weekly progress chart
+- Goal completion rate
+- Habit streaks
+- Momentum history
+- Achievement cards
+
+Use clean graphs and premium cards.
+
+### 12. Profile Screen
+Include:
+- User avatar
+- Name
+- Email
+- Settings options
+- Preferences
+- Logout button
+
+## Navigation
+
+Use premium bottom navigation with these tabs:
+- Home
+- Goals
+- AI
+- Progress
+- Profile
+
+## UI Quality Rules
+
+Important:
+- Mobile-first design
+- Production-level UI
+- Premium app-store quality
+- No robotic design
+- No clutter
+- No cheap template layout
+- Strong visual hierarchy
+- Smooth rounded cards
+- Premium gradients
+- Clean spacing
+- Professional dashboard
+- Consistent design system
+
+## Output Requirement
+
+Generate a complete premium mobile app UI concept for Momentum-AI with all required screens.
+
+The design should look ready for Flutter development and Figma handoff.

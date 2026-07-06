@@ -1,0 +1,96 @@
+Momentum-AI - Project Brief
+
+## 1. App Name
+Momentum-AI
+
+## 2. App Type
+Mobile App
+
+## 3. Target Users
+- Who will use this app?
+- Students?
+- Business owners?
+- Fitness users?
+- AI productivity users?
+- General public?
+
+## 4. Main Problem
+This app solves what problem?
+
+## 5. Main Goal
+What should user achieve after using the app?
+
+## 6. Core Features
+1.
+2.
+3.
+4.
+5.
+
+## 7. Screens Required
+1. Splash Screen
+2. Onboarding Screens
+3. Login / Signup
+4. Home Dashboard
+5.
+6.
+7.
+
+## 8. User Flow
+User opens app → then what happens step by step?
+
+## 9. AI Features
+What AI functionality is required?
+- Chatbot?
+- Recommendations?
+- Content generation?
+- Fitness/goal tracking?
+- Personal assistant?
+- Other?
+
+## 10. Backend Requirements
+What data needs to be saved?
+- Users
+- Profiles
+- Chat history
+- Plans
+- Payments
+- Notifications
+- Other
+
+## 11. Design Reference
+Muscle Monster app reference:
+- What exactly sir liked in that app?
+- Colors?
+- Cards?
+- Dashboard?
+- Animations?
+- Premium look?
+- Dark theme?
+
+## 12. Authentication
+Login method:
+- Email/password
+- Google login
+- Apple login
+- OTP
+- Guest mode
+
+## 13. Monetization
+- Free app?
+- Subscription?
+- One-time payment?
+- In-app purchases?
+- Admin panel required?
+
+## 14. Admin Panel
+Do we need admin panel?
+Yes / No
+
+If yes, what should admin manage?
+
+## 15. Deadline
+Expected completion date:
+
+## 16. Notes From Meeting
+Add everything sir discussed in meeting here.
