@@ -1,45 +1,95 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
+# ==============================
+# Momentum-AI Root Git Ignore
+# ==============================
+
+# OS files
 .DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+Thumbs.db
+desktop.ini
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
+# Editor files
+.vscode/
 .idea/
+*.iml
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# Environment files
+.env
+.env.*
+!.env.example
 
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Build folders
+build/
+dist/
+out/
+coverage/
+
+# Flutter / Dart
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
-/build/
-/coverage/
+build/
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+android/.gradle/
+android/app/build/
+android/build/
 
-# Symbolication related
-app.*.symbols
+# Flutter generated files
+**/GeneratedPluginRegistrant.java
+**/GeneratedPluginRegistrant.swift
+**/generated_plugin_registrant.dart
 
-# Obfuscation related
-app.*.map.json
+# Flutter local config
+local.properties
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Android signing
+*.jks
+*.keystore
+key.properties
+
+# iOS signing
+*.mobileprovision
+*.p12
+*.cer
+*.xcuserstate
+ios/Runner.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/xcuserdata/
+
+# Node / Express backend
+05-Backend-Node/node_modules/
+05-Backend-Node/dist/
+05-Backend-Node/build/
+05-Backend-Node/coverage/
+05-Backend-Node/.env
+05-Backend-Node/.env.*
+
+# Prisma
+05-Backend-Node/prisma/dev.db
+05-Backend-Node/prisma/dev.db-journal
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# Sensitive files
+secrets/
+private/
+*.pem
+*.key
