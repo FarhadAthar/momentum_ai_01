@@ -48,7 +48,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Colors.white,
+        systemNavigationBarColor: Color(0xFFFFF7EC),
         systemNavigationBarIconBrightness: Brightness.dark,
         systemNavigationBarDividerColor: Colors.transparent,
         systemNavigationBarContrastEnforced: false,
@@ -140,17 +140,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Colors.white,
+        systemNavigationBarColor: Color(0xFFFFF7EC),
         systemNavigationBarIconBrightness: Brightness.dark,
         systemNavigationBarDividerColor: Colors.transparent,
         systemNavigationBarContrastEnforced: false,
         systemStatusBarContrastEnforced: false,
       ),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFFFF7EC),
         body: Stack(
           children: [
-            const _PremiumLightBackground(),
+            const _PremiumWarmBackground(),
             SafeArea(
               bottom: true,
               child: Center(
@@ -308,11 +308,11 @@ class _AnimatedText extends StatelessWidget {
                   child: Text(
                     'Momentum AI',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.sora(
-                      fontSize: 40,
-                      height: 1.02,
+                    style: GoogleFonts.spaceGrotesk(
+                      fontSize: 41,
+                      height: 1.0,
                       fontWeight: FontWeight.w800,
-                      letterSpacing: -2.0,
+                      letterSpacing: -2.1,
                       color: Colors.white,
                       shadows: [
                         Shadow(
@@ -422,60 +422,61 @@ class _AnimatedProgressBar extends StatelessWidget {
   }
 }
 
-class _PremiumLightBackground extends StatelessWidget {
-  const _PremiumLightBackground();
+class _PremiumWarmBackground extends StatelessWidget {
+  const _PremiumWarmBackground();
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned.fill(child: Container(color: Colors.white)),
-        Positioned.fill(
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Colors.white, AppTheme.background, Color(0xFFF3F6FF)],
-              ),
-            ),
+        const Positioned.fill(
+          child: DecoratedBox(
+            decoration: BoxDecoration(color: Color(0xFFFFF7EC)),
           ),
         ),
         Positioned(
-          top: -95,
-          right: -80,
-          child: _GlowBlob(
-            size: 230,
-            color: AppTheme.primaryViolet.withValues(alpha: 0.20),
-          ),
-        ),
-        Positioned(
-          top: 170,
-          left: -110,
-          child: _GlowBlob(
+          top: -120,
+          right: -90,
+          child: _BackgroundGlow(
             size: 260,
-            color: AppTheme.primaryBlue.withValues(alpha: 0.18),
+            color: Colors.white.withValues(alpha: 0.90),
           ),
         ),
         Positioned(
+          left: -110,
           bottom: -120,
-          right: -100,
-          child: _GlowBlob(
+          child: _BackgroundGlow(
             size: 300,
-            color: AppTheme.primaryCyan.withValues(alpha: 0.16),
+            color: const Color(0xFFD9B7E5).withValues(alpha: 0.22),
           ),
         ),
-        Positioned.fill(child: CustomPaint(painter: _SubtlePatternPainter())),
+        Positioned(
+          right: -90,
+          bottom: 80,
+          child: _BackgroundGlow(
+            size: 220,
+            color: AppTheme.primaryBlue.withValues(alpha: 0.08),
+          ),
+        ),
+        Positioned(
+          top: 120,
+          left: -90,
+          child: _BackgroundGlow(
+            size: 210,
+            color: AppTheme.primaryViolet.withValues(alpha: 0.09),
+          ),
+        ),
+        Positioned.fill(child: CustomPaint(painter: _SoftPatternPainter())),
       ],
     );
   }
 }
 
-class _GlowBlob extends StatelessWidget {
+class _BackgroundGlow extends StatelessWidget {
   final double size;
   final Color color;
 
-  const _GlowBlob({required this.size, required this.color});
+  const _BackgroundGlow({required this.size, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -485,37 +486,64 @@ class _GlowBlob extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: RadialGradient(
-          colors: [color, color.withValues(alpha: 0.08), Colors.transparent],
+          colors: [color, color.withValues(alpha: 0.18), Colors.transparent],
         ),
       ),
     );
   }
 }
 
-class _SubtlePatternPainter extends CustomPainter {
+class _SoftPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppTheme.primaryBlue.withValues(alpha: 0.030)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
+    final linePaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.34)
+      ..strokeWidth = 1.2
+      ..style = PaintingStyle.stroke;
 
-    const spacing = 42.0;
+    final dotPaint = Paint()
+      ..color = AppTheme.primaryViolet.withValues(alpha: 0.055)
+      ..style = PaintingStyle.fill;
 
-    for (double x = -20; x < size.width + 40; x += spacing) {
-      for (double y = -20; y < size.height + 40; y += spacing) {
-        final rect = Rect.fromCenter(
-          center: Offset(x, y),
-          width: 16,
-          height: 16,
-        );
-
-        canvas.drawRRect(
-          RRect.fromRectAndRadius(rect, const Radius.circular(5)),
-          paint,
-        );
+    for (double x = 20; x < size.width; x += 58) {
+      for (double y = 40; y < size.height; y += 58) {
+        canvas.drawCircle(Offset(x, y), 1.8, dotPaint);
       }
     }
+
+    final path = Path()
+      ..moveTo(-20, size.height * 0.24)
+      ..quadraticBezierTo(
+        size.width * 0.32,
+        size.height * 0.18,
+        size.width * 0.62,
+        size.height * 0.25,
+      )
+      ..quadraticBezierTo(
+        size.width * 0.90,
+        size.height * 0.31,
+        size.width + 20,
+        size.height * 0.22,
+      );
+
+    canvas.drawPath(path, linePaint);
+
+    final secondPath = Path()
+      ..moveTo(-20, size.height * 0.76)
+      ..quadraticBezierTo(
+        size.width * 0.38,
+        size.height * 0.68,
+        size.width * 0.76,
+        size.height * 0.76,
+      )
+      ..quadraticBezierTo(
+        size.width * 0.92,
+        size.height * 0.79,
+        size.width + 30,
+        size.height * 0.72,
+      );
+
+    canvas.drawPath(secondPath, linePaint);
   }
 
   @override

@@ -141,8 +141,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       ),
                     ),
                     _BottomNavigation(
-                      currentPage: state.currentPage,
-                      totalPages: state.pages.length,
                       isFirstPage: state.isFirstPage,
                       isLastPage: state.isLastPage,
                       onBackTap: _goToPreviousPage,
@@ -213,23 +211,40 @@ class _OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: floatingController,
-      builder: (context, child) {
-        final floatValue = math.sin(floatingController.value * math.pi);
-        final verticalOffset = floatValue * -10;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final stageHeight = (constraints.maxHeight * 0.52)
+            .clamp(320.0, 370.0)
+            .toDouble();
 
-        return Column(
-          children: [
-            const Spacer(flex: 1),
-            Transform.translate(
-              offset: Offset(0, verticalOffset),
-              child: _IllustrationStage(image: page.image),
-            ),
-            const SizedBox(height: 34),
-            _PremiumTextBlock(title: page.title, description: page.description),
-            const Spacer(flex: 2),
-          ],
+        final imageHeight = (stageHeight * 0.86).clamp(275.0, 320.0).toDouble();
+
+        return AnimatedBuilder(
+          animation: floatingController,
+          builder: (context, child) {
+            final floatValue = math.sin(floatingController.value * math.pi);
+            final verticalOffset = floatValue * -10;
+
+            return Column(
+              children: [
+                SizedBox(height: constraints.maxHeight * 0.025),
+                Transform.translate(
+                  offset: Offset(0, verticalOffset),
+                  child: _IllustrationStage(
+                    image: page.image,
+                    stageHeight: stageHeight,
+                    imageHeight: imageHeight,
+                  ),
+                ),
+                const SizedBox(height: 26),
+                _PremiumTextBlock(
+                  title: page.title,
+                  description: page.description,
+                ),
+                const Spacer(),
+              ],
+            );
+          },
         );
       },
     );
@@ -238,67 +253,65 @@ class _OnboardingPage extends StatelessWidget {
 
 class _IllustrationStage extends StatelessWidget {
   final String image;
+  final double stageHeight;
+  final double imageHeight;
 
-  const _IllustrationStage({required this.image});
+  const _IllustrationStage({
+    required this.image,
+    required this.stageHeight,
+    required this.imageHeight,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 278,
+      height: stageHeight,
       width: double.infinity,
       child: Stack(
         alignment: Alignment.center,
         children: [
           Positioned(
-            top: 26,
+            top: 18,
+            right: 38,
+            child: _SoftBubble(
+              size: 38,
+              color: AppTheme.primaryViolet.withValues(alpha: 0.10),
+            ),
+          ),
+          Positioned(
+            left: 34,
+            bottom: 54,
+            child: _SoftBubble(
+              size: 30,
+              color: AppTheme.primaryBlue.withValues(alpha: 0.09),
+            ),
+          ),
+          Positioned(
+            right: 58,
+            bottom: 34,
+            child: _SoftBubble(
+              size: 19,
+              color: AppTheme.primaryCyan.withValues(alpha: 0.16),
+            ),
+          ),
+          Positioned(
+            bottom: 28,
             child: Container(
-              width: 238,
-              height: 238,
+              width: 190,
+              height: 32,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.72),
+                borderRadius: BorderRadius.circular(100),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFFA25DCB).withValues(alpha: 0.10),
-                    blurRadius: 42,
-                    spreadRadius: 10,
-                    offset: const Offset(0, 18),
-                  ),
-                  BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.95),
-                    blurRadius: 18,
-                    spreadRadius: 2,
-                    offset: const Offset(-8, -10),
+                    color: AppTheme.primaryViolet.withValues(alpha: 0.10),
+                    blurRadius: 34,
+                    spreadRadius: 6,
                   ),
                 ],
               ),
             ),
           ),
-          Positioned(
-            top: 14,
-            right: 42,
-            child: _SoftBubble(
-              size: 36,
-              color: AppTheme.primaryViolet.withValues(alpha: 0.11),
-            ),
-          ),
-          Positioned(
-            left: 38,
-            bottom: 34,
-            child: _SoftBubble(
-              size: 28,
-              color: AppTheme.primaryBlue.withValues(alpha: 0.10),
-            ),
-          ),
-          Positioned(
-            right: 62,
-            bottom: 20,
-            child: _SoftBubble(
-              size: 18,
-              color: AppTheme.primaryCyan.withValues(alpha: 0.18),
-            ),
-          ),
-          Image.asset(image, height: 230, fit: BoxFit.contain),
+          Image.asset(image, height: imageHeight, fit: BoxFit.contain),
         ],
       ),
     );
@@ -318,25 +331,25 @@ class _PremiumTextBlock extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: GoogleFonts.sora(
-            fontSize: 24,
-            height: 1.14,
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: 25.5,
+            height: 1.12,
             fontWeight: FontWeight.w800,
-            letterSpacing: -0.8,
+            letterSpacing: -0.9,
             color: const Color(0xFF171923),
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 17),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 6),
           child: Text(
             description,
             textAlign: TextAlign.center,
             style: GoogleFonts.manrope(
-              fontSize: 14.5,
-              height: 1.55,
+              fontSize: 14.7,
+              height: 1.56,
               fontWeight: FontWeight.w600,
-              letterSpacing: -0.1,
+              letterSpacing: -0.12,
               color: const Color(0xFF7C8491),
             ),
           ),
@@ -347,16 +360,12 @@ class _PremiumTextBlock extends StatelessWidget {
 }
 
 class _BottomNavigation extends StatelessWidget {
-  final int currentPage;
-  final int totalPages;
   final bool isFirstPage;
   final bool isLastPage;
   final VoidCallback onBackTap;
   final VoidCallback onNextTap;
 
   const _BottomNavigation({
-    required this.currentPage,
-    required this.totalPages,
     required this.isFirstPage,
     required this.isLastPage,
     required this.onBackTap,
@@ -395,7 +404,6 @@ class _BottomNavigation extends StatelessWidget {
               ),
             ),
           ),
-          _LargePageIndicator(currentPage: currentPage, totalPages: totalPages),
           Align(
             alignment: Alignment.centerRight,
             child: AnimatedSwitcher(
@@ -433,51 +441,56 @@ class _ArrowButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _NeumorphicTapShell(
-      width: 84,
-      height: 58,
-      borderRadius: 32,
+      width: 86,
+      height: 52,
+      borderRadius: 30,
       onTap: onTap,
       child: Stack(
+        clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
           Positioned(
             right: 0,
             child: Container(
-              width: 58,
-              height: 58,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFA45AB5).withValues(alpha: 0.18),
+                color: AppTheme.primaryViolet.withValues(alpha: 0.15),
               ),
             ),
           ),
           Positioned(
-            right: 14,
+            right: 11,
             child: Container(
-              width: 58,
-              height: 58,
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFA45AB5).withValues(alpha: 0.28),
+                color: AppTheme.primaryBlue.withValues(alpha: 0.17),
               ),
             ),
           ),
           Positioned(
-            right: 28,
+            right: 22,
             child: Container(
-              width: 58,
-              height: 58,
+              width: 52,
+              height: 52,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [Color(0xFFB766C4), Color(0xFF8F47A8)],
+                  colors: [
+                    AppTheme.primaryBlue,
+                    Color(0xFF6258FF),
+                    AppTheme.primaryViolet,
+                  ],
                 ),
               ),
               child: const Icon(
                 Icons.arrow_forward_rounded,
-                size: 30,
+                size: 27,
                 color: Colors.white,
               ),
             ),
@@ -496,24 +509,33 @@ class _GetStartedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _NeumorphicTapShell(
-      width: 150,
-      height: 58,
-      borderRadius: 32,
+      width: 154,
+      height: 60,
+      borderRadius: 34,
       onTap: onTap,
       child: Container(
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(34),
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFFB766C4), Color(0xFF8F47A8)],
+            colors: [
+              AppTheme.primaryBlue,
+              Color(0xFF6258FF),
+              AppTheme.primaryViolet,
+            ],
           ),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF9C54AE).withValues(alpha: 0.30),
+              color: AppTheme.primaryBlue.withValues(alpha: 0.24),
               blurRadius: 28,
               offset: const Offset(0, 14),
+            ),
+            BoxShadow(
+              color: AppTheme.primaryViolet.withValues(alpha: 0.18),
+              blurRadius: 32,
+              offset: const Offset(0, 18),
             ),
           ],
         ),
@@ -560,14 +582,19 @@ class _NeumorphicTapShell extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF9C54AE).withValues(alpha: 0.22),
-                blurRadius: 32,
-                offset: const Offset(0, 18),
+                color: AppTheme.primaryBlue.withValues(alpha: 0.13),
+                blurRadius: 26,
+                offset: const Offset(0, 14),
               ),
               BoxShadow(
-                color: Colors.white.withValues(alpha: 0.85),
-                blurRadius: 18,
-                offset: const Offset(-8, -8),
+                color: AppTheme.primaryViolet.withValues(alpha: 0.11),
+                blurRadius: 30,
+                offset: const Offset(0, 16),
+              ),
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.82),
+                blurRadius: 16,
+                offset: const Offset(-7, -7),
               ),
             ],
           ),
@@ -597,49 +624,21 @@ class _MiniProgressDots extends StatelessWidget {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 260),
           curve: Curves.easeOutCubic,
-          width: isActive ? 7 : 4,
-          height: 4,
-          margin: const EdgeInsets.symmetric(horizontal: 2.5),
+          width: isActive ? 16 : 5,
+          height: 5,
+          margin: const EdgeInsets.symmetric(horizontal: 2.7),
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFF72747A) : const Color(0xFFB9BBC2),
+            color: isActive ? AppTheme.primaryBlue : const Color(0xFFB9BBC2),
             borderRadius: BorderRadius.circular(100),
-          ),
-        );
-      }),
-    );
-  }
-}
-
-class _LargePageIndicator extends StatelessWidget {
-  final int currentPage;
-  final int totalPages;
-
-  const _LargePageIndicator({
-    required this.currentPage,
-    required this.totalPages,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(totalPages, (index) {
-        final isActive = index == currentPage;
-
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOutCubic,
-          width: isActive ? 24 : 7,
-          height: 7,
-          margin: const EdgeInsets.symmetric(horizontal: 3.5),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            gradient: isActive
-                ? const LinearGradient(
-                    colors: [Color(0xFFB766C4), Color(0xFF8F47A8)],
-                  )
+            boxShadow: isActive
+                ? [
+                    BoxShadow(
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.22),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
                 : null,
-            color: isActive ? null : const Color(0xFFD7B7DB),
           ),
         );
       }),
@@ -680,7 +679,15 @@ class _OnboardingBackground extends StatelessWidget {
           bottom: 80,
           child: _BackgroundGlow(
             size: 220,
-            color: const Color(0xFFB766C4).withValues(alpha: 0.08),
+            color: AppTheme.primaryBlue.withValues(alpha: 0.08),
+          ),
+        ),
+        Positioned(
+          top: 120,
+          left: -90,
+          child: _BackgroundGlow(
+            size: 210,
+            color: AppTheme.primaryViolet.withValues(alpha: 0.09),
           ),
         ),
         Positioned.fill(child: CustomPaint(painter: _SoftPatternPainter())),
@@ -735,7 +742,7 @@ class _SoftPatternPainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final dotPaint = Paint()
-      ..color = const Color(0xFFB766C4).withValues(alpha: 0.055)
+      ..color = AppTheme.primaryViolet.withValues(alpha: 0.055)
       ..style = PaintingStyle.fill;
 
     for (double x = 20; x < size.width; x += 58) {
