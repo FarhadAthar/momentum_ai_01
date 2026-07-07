@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,7 +67,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
     _pulseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2200),
+      duration: const Duration(milliseconds: 2400),
     );
 
     _progressController = AnimationController(
@@ -76,17 +78,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _logoScale = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(
-          begin: 1.68,
+          begin: 1.72,
           end: 0.92,
         ).chain(CurveTween(curve: Curves.easeOutCubic)),
-        weight: 70,
+        weight: 72,
       ),
       TweenSequenceItem(
         tween: Tween<double>(
           begin: 0.92,
           end: 1.0,
         ).chain(CurveTween(curve: Curves.easeOutBack)),
-        weight: 30,
+        weight: 28,
       ),
     ]).animate(_introController);
 
@@ -129,6 +131,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     ref.listen(splashViewModelProvider, (previous, next) {
+      if (!mounted) return;
+
       if (next.isFinished && !_hasNavigated) {
         _hasNavigated = true;
         context.go(AppRoutes.onboarding);
@@ -204,70 +208,184 @@ class _AnimatedLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: Listenable.merge([introController, pulseController]),
-      builder: (context, child) {
-        final pulse = pulseController.value;
+    return RepaintBoundary(
+      child: AnimatedBuilder(
+        animation: Listenable.merge([introController, pulseController]),
+        builder: (context, child) {
+          final pulse = pulseController.value;
+          final rotate = pulseController.value * math.pi * 2;
 
-        return Opacity(
-          opacity: logoOpacity.value,
-          child: Transform.scale(
-            scale: logoScale.value,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 258 + (pulse * 36),
-                  height: 258 + (pulse * 36),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppTheme.primaryBlue.withValues(
-                          alpha: 0.24 + pulse * 0.10,
-                        ),
-                        AppTheme.primaryViolet.withValues(
-                          alpha: 0.16 + pulse * 0.08,
-                        ),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 178,
-                  height: 178,
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.82),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryBlue.withValues(alpha: 0.18),
-                        blurRadius: 42,
-                        spreadRadius: 2,
-                        offset: const Offset(0, 18),
+          return Opacity(
+            opacity: logoOpacity.value,
+            child: Transform.scale(
+              scale: logoScale.value,
+              child: SizedBox(
+                width: 292,
+                height: 226,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _LogoAuraGlow(pulse: pulse),
+                    CustomPaint(
+                      size: const Size(250, 210),
+                      painter: _LogoOrbitPainter(
+                        progress: pulse,
+                        rotation: rotate,
                       ),
-                      BoxShadow(
-                        color: AppTheme.primaryViolet.withValues(alpha: 0.14),
-                        blurRadius: 38,
-                        spreadRadius: 1,
-                        offset: const Offset(0, -10),
-                      ),
-                    ],
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.95),
-                      width: 1.2,
                     ),
-                  ),
-                  child: Image.asset(AppAssets.logo, fit: BoxFit.contain),
+                    Positioned(
+                      bottom: 20,
+                      child: Container(
+                        width: 155,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryBlue.withValues(
+                                alpha: 0.18,
+                              ),
+                              blurRadius: 34,
+                              spreadRadius: 8,
+                            ),
+                            BoxShadow(
+                              color: AppTheme.primaryViolet.withValues(
+                                alpha: 0.16,
+                              ),
+                              blurRadius: 38,
+                              spreadRadius: 6,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Transform.translate(
+                      offset: const Offset(0, -4),
+                      child: Image.asset(
+                        AppAssets.logo,
+                        width: 172,
+                        height: 172,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _LogoAuraGlow extends StatelessWidget {
+  final double pulse;
+
+  const _LogoAuraGlow({required this.pulse});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          width: 230 + (pulse * 36),
+          height: 230 + (pulse * 36),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                AppTheme.primaryBlue.withValues(alpha: 0.24 + pulse * 0.08),
+                AppTheme.primaryViolet.withValues(alpha: 0.16 + pulse * 0.06),
+                AppTheme.primaryCyan.withValues(alpha: 0.06),
+                Colors.transparent,
               ],
+              stops: const [0.0, 0.38, 0.62, 1.0],
             ),
           ),
-        );
-      },
+        ),
+        Container(
+          width: 174 + (pulse * 24),
+          height: 174 + (pulse * 24),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                Colors.white.withValues(alpha: 0.38),
+                AppTheme.primaryBlue.withValues(alpha: 0.12),
+                Colors.transparent,
+              ],
+              stops: const [0.0, 0.48, 1.0],
+            ),
+          ),
+        ),
+      ],
     );
+  }
+}
+
+class _LogoOrbitPainter extends CustomPainter {
+  final double progress;
+  final double rotation;
+
+  const _LogoOrbitPainter({required this.progress, required this.rotation});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+
+    final firstPaint = Paint()
+      ..color = AppTheme.primaryBlue.withValues(alpha: 0.14)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.15;
+
+    final secondPaint = Paint()
+      ..color = AppTheme.primaryViolet.withValues(alpha: 0.12)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.05;
+
+    final dotPaint = Paint()
+      ..color = AppTheme.primaryBlue.withValues(alpha: 0.32)
+      ..style = PaintingStyle.fill;
+
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(rotation * 0.035);
+    canvas.translate(-center.dx, -center.dy);
+
+    canvas.drawOval(
+      Rect.fromCenter(center: center, width: 218, height: 126),
+      firstPaint,
+    );
+
+    canvas.restore();
+
+    canvas.save();
+    canvas.translate(center.dx, center.dy);
+    canvas.rotate(-rotation * 0.028);
+    canvas.translate(-center.dx, -center.dy);
+
+    canvas.drawOval(
+      Rect.fromCenter(center: center, width: 190, height: 108),
+      secondPaint,
+    );
+
+    canvas.restore();
+
+    final angle = (progress * math.pi * 2) - math.pi / 4;
+    final dotOffset = Offset(
+      center.dx + math.cos(angle) * 108,
+      center.dy + math.sin(angle) * 52,
+    );
+
+    canvas.drawCircle(dotOffset, 3.2, dotPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _LogoOrbitPainter oldDelegate) {
+    return oldDelegate.progress != progress || oldDelegate.rotation != rotation;
   }
 }
 
