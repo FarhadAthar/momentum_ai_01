@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/view/login_screen.dart';
+import '../features/auth/view/signup_screen.dart';
 import '../features/onboarding/view/onboarding_screen.dart';
 import '../features/splash/view/splash_screen.dart';
 
@@ -24,6 +25,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: AppRouteNames.login,
         builder: (context, state) => const LoginScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.signup,
+        name: AppRouteNames.signup,
+        builder: (context, state) => const SignupScreen(),
+      ),
     ],
   );
 });
@@ -34,6 +40,7 @@ class AppRoutes {
   static const String splash = '/';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
+  static const String signup = '/signup';
 }
 
 class AppRouteNames {
@@ -42,4 +49,5 @@ class AppRouteNames {
   static const String splash = 'splash';
   static const String onboarding = 'onboarding';
   static const String login = 'login';
+  static const String signup = 'signup';
 }
