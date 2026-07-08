@@ -5,6 +5,7 @@ import '../features/auth/view/login_screen.dart';
 import '../features/auth/view/signup_screen.dart';
 import '../features/onboarding/view/onboarding_screen.dart';
 import '../features/splash/view/splash_screen.dart';
+import '../features/dashboard/view/dashboard_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -30,6 +31,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: AppRouteNames.signup,
         builder: (context, state) => const SignupScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.dashboard,
+        name: AppRouteNames.dashboard,
+        builder: (context, state) => const DashboardScreen(),
+      ),
     ],
   );
 });
@@ -41,6 +47,7 @@ class AppRoutes {
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String signup = '/signup';
+  static const String dashboard = '/dashboard';
 }
 
 class AppRouteNames {
@@ -50,4 +57,5 @@ class AppRouteNames {
   static const String onboarding = 'onboarding';
   static const String login = 'login';
   static const String signup = 'signup';
+  static const String dashboard = 'dashboard';
 }

@@ -78,16 +78,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Login action ready for backend integration',
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
-        ),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppTheme.textDark,
-      ),
-    );
+    context.go(AppRoutes.dashboard);
+    return;
   }
 
   Future<void> _handleGoogleLogin() async {
