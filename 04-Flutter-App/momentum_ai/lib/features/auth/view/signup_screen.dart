@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -287,8 +285,8 @@ class _SignupGlassCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(32),
       clipBehavior: Clip.antiAlias,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+      child: Container(
+        color: Colors.white.withValues(alpha: 0.85),
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(20, 22, 20, 26),

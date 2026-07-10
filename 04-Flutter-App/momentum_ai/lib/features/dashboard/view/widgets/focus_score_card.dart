@@ -127,22 +127,22 @@ class FocusScoreCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _StatItem(
+              _statItem(
                 value: '$tasksCompleted/$totalTasks',
                 label: 'Tasks',
                 bgColor: Colors.white.withValues(alpha: 0.15),
               ),
-              _StatItem(
+              _statItem(
                 value: focusHours,
                 label: 'Focus',
                 bgColor: Colors.white.withValues(alpha: 0.15),
               ),
-              _StatItem(
+              _statItem(
                 value: '$streak🔥',
                 label: 'Streak',
                 bgColor: Colors.white.withValues(alpha: 0.15),
               ),
-              _StatItem(
+              _statItem(
                 value: '+$xp',
                 label: 'XP',
                 bgColor: Colors.white.withValues(alpha: 0.15),
@@ -154,7 +154,7 @@ class FocusScoreCard extends StatelessWidget {
     );
   }
 
-  Widget _StatItem({
+  Widget _statItem({
     required String value,
     required String label,
     required Color bgColor,

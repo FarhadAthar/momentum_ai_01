@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,69 +14,68 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-      height: 85,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 32, sigmaY: 32),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.25),
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.5),
-                width: 1.2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.06),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _NavItem(
-                  index: 0,
-                  icon: Icons.home_rounded,
-                  label: 'Home',
-                  selectedIndex: selectedIndex,
-                  onTap: onItemTapped,
-                ),
-                _NavItem(
-                  index: 1,
-                  icon: Icons.checklist_rounded,
-                  label: 'Tasks',
-                  selectedIndex: selectedIndex,
-                  onTap: onItemTapped,
-                ),
-                _NavItem(
-                  index: 2,
-                  icon: Icons.bolt_rounded,
-                  label: 'Focus',
-                  selectedIndex: selectedIndex,
-                  onTap: onItemTapped,
-                ),
-                _NavItem(
-                  index: 3,
-                  icon: Icons.analytics_rounded,
-                  label: 'Stats',
-                  selectedIndex: selectedIndex,
-                  onTap: onItemTapped,
-                ),
-                _NavItem(
-                  index: 4,
-                  icon: Icons.chat_bubble_outline_rounded,
-                  label: 'AI',
-                  selectedIndex: selectedIndex,
-                  onTap: onItemTapped,
-                ),
-              ],
-            ),
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      height: 76,
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFFF3F4F6),
+          borderRadius: BorderRadius.circular(34),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.8),
+            width: 1.5,
           ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.white.withValues(alpha: 0.9),
+              blurRadius: 18,
+              offset: const Offset(-8, -8),
+            ),
+            BoxShadow(
+              color: const Color(0xFFB0B8C4).withValues(alpha: 0.35),
+              blurRadius: 18,
+              offset: const Offset(8, 8),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _NavItem(
+              index: 0,
+              icon: Icons.home_rounded,
+              label: 'Home',
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            _NavItem(
+              index: 1,
+              icon: Icons.checklist_rounded,
+              label: 'Tasks',
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            _NavItem(
+              index: 2,
+              icon: Icons.bolt_rounded,
+              label: 'Focus',
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            _NavItem(
+              index: 3,
+              icon: Icons.analytics_rounded,
+              label: 'Stats',
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+            _NavItem(
+              index: 4,
+              icon: Icons.chat_bubble_outline_rounded,
+              label: 'AI',
+              selectedIndex: selectedIndex,
+              onTap: onItemTapped,
+            ),
+          ],
         ),
       ),
     );
@@ -103,39 +101,45 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isSelected = selectedIndex == index;
 
-    // GestureDetector ko hata kar InkWell use kiya hai
     return InkWell(
       onTap: () => onTap(index),
-      borderRadius: BorderRadius.circular(
-        32,
-      ), // Touch par premium ripple effect
+      borderRadius: BorderRadius.circular(32),
       child: SizedBox(
-        width: 64,
+        width: 58, // 👈 FIX: 64 se kam kar diya taake overflow na ho
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 48,
-              width: 48,
+              height: 44, // 👈 FIX: Circle ka size thota adjust kar diya
+              width: 44,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 280),
                     curve: Curves.easeOutQuart,
-                    width: isSelected ? 48 : 0,
-                    height: isSelected ? 48 : 0,
+                    width: isSelected ? 44 : 0,
+                    height: isSelected ? 44 : 0,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF6366F1),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                      ),
                       shape: BoxShape.circle,
                       boxShadow: isSelected
                           ? [
                               BoxShadow(
                                 color: const Color(
                                   0xFF6366F1,
-                                ).withValues(alpha: 0.35),
+                                ).withValues(alpha: 0.30),
                                 blurRadius: 16,
                                 offset: const Offset(0, 8),
+                              ),
+                              BoxShadow(
+                                color: Colors.white.withValues(alpha: 0.6),
+                                blurRadius: 6,
+                                offset: const Offset(-3, -3),
                               ),
                             ]
                           : [],
@@ -153,7 +157,7 @@ class _NavItem extends StatelessWidget {
                         color: isSelected
                             ? Colors.white
                             : const Color(0xFF6B7280),
-                        size: 26,
+                        size: 24, // Icon size bhi thoda adjust kar diya
                       ),
                     ),
                   ),

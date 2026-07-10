@@ -1,15 +1,15 @@
-import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/dashboard_state.dart';
 
 final dashboardViewModelProvider =
-    StateNotifierProvider<DashboardViewModel, DashboardState>((ref) {
+    NotifierProvider<DashboardViewModel, DashboardState>(() {
       return DashboardViewModel();
     });
 
-class DashboardViewModel extends StateNotifier<DashboardState> {
-  DashboardViewModel() : super(const DashboardState()) {
-    // Data ko initialize karein mock data ke saath
-    state = state.copyWith(
+class DashboardViewModel extends Notifier<DashboardState> {
+  @override
+  DashboardState build() {
+    return const DashboardState().copyWith(
       meetings: const [
         MeetingModel(title: 'Design Review', time: '10:00 AM', peopleCount: 4),
         MeetingModel(
