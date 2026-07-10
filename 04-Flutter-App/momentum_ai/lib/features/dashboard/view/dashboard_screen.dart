@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:momentum_ai/features/ai_chat/view/chat_screen.dart';
 
 import '../view_model/dashboard_view_model.dart';
 import 'widgets/weather_card.dart';
@@ -388,16 +389,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 ),
 
                 // 1. Tasks Screen
-                TasksScreen(),
+                const TasksScreen(),
 
                 // 2. Focus Placeholder
                 const FocusScreen(),
 
                 // 3. Stats Placeholder
-                StatsScreen(),
+                const StatsScreen(),
 
                 // 4. AI Placeholder
-                const AIPlaceholder(),
+                const ChatScreen(),
               ],
             ),
 

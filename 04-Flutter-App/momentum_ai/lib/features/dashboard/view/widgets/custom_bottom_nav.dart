@@ -14,7 +14,12 @@ class CustomBottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      margin: const EdgeInsets.fromLTRB(
+        20,
+        0,
+        20,
+        8,
+      ), // 👈 YAHAN 24 se 8 kar diya
       height: 76,
       child: Container(
         decoration: BoxDecoration(
@@ -105,12 +110,12 @@ class _NavItem extends StatelessWidget {
       onTap: () => onTap(index),
       borderRadius: BorderRadius.circular(32),
       child: SizedBox(
-        width: 58, // 👈 FIX: 64 se kam kar diya taake overflow na ho
+        width: 58,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(
-              height: 44, // 👈 FIX: Circle ka size thota adjust kar diya
+              height: 44,
               width: 44,
               child: Stack(
                 alignment: Alignment.center,
@@ -157,7 +162,7 @@ class _NavItem extends StatelessWidget {
                         color: isSelected
                             ? Colors.white
                             : const Color(0xFF6B7280),
-                        size: 24, // Icon size bhi thoda adjust kar diya
+                        size: 24,
                       ),
                     ),
                   ),
