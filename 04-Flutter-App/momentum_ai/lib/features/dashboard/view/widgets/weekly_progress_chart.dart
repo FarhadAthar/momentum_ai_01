@@ -3,19 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class WeeklyProgressChart extends StatelessWidget {
-  const WeeklyProgressChart({super.key});
+  final VoidCallback onFullReportTap; // 👈 YEH CALLBACK ADD KIYA HAI
+
+  const WeeklyProgressChart({
+    super.key,
+    required this.onFullReportTap, // 👈 CONSTRUCTOR MEIN REQUIRE KIYA
+  });
 
   @override
   Widget build(BuildContext context) {
-    final List<double> data = [
-      0.65,
-      0.8,
-      0.5,
-      0.85,
-      0.6,
-      0.45,
-      0.7,
-    ]; // Mock data
+    final List<double> data = [0.65, 0.8, 0.5, 0.85, 0.6, 0.45, 0.7];
     final List<String> days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
     return Container(
@@ -45,24 +42,29 @@ class WeeklyProgressChart extends StatelessWidget {
                   color: const Color(0xFF111827),
                 ),
               ),
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.arrow_forward_rounded,
-                  size: 16,
-                  color: Color(0xFF4F46E5),
-                ),
-                label: Text(
-                  'Full Report',
-                  style: GoogleFonts.manrope(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF4F46E5),
-                  ),
-                ),
+              TextButton(
+                onPressed: onFullReportTap, // 👈 YAHAN CALLBACK KO CALL KIYA
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      'Full Report',
+                      style: GoogleFonts.manrope(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF4F46E5),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.arrow_forward_rounded,
+                      size: 16,
+                      color: Color(0xFF4F46E5),
+                    ),
+                  ],
                 ),
               ),
             ],

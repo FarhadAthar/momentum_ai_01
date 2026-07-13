@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:momentum_ai/features/calendar/view/calendar_screen.dart';
 import 'package:momentum_ai/features/profile/view/profile_screen.dart';
 import 'package:momentum_ai/features/subscription/view/subscription_screen.dart';
 
@@ -48,6 +49,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: AppRouteNames.subscription,
         builder: (context, state) => const SubscriptionScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.calendar,
+        name: AppRouteNames.calendar,
+        builder: (context, state) => const CalendarScreen(),
+      ),
     ],
   );
 });
@@ -62,6 +68,7 @@ class AppRoutes {
   static const String dashboard = '/dashboard';
   static const String profile = '/profile';
   static const String subscription = '/subscription';
+  static const String calendar = '/calendar';
 }
 
 class AppRouteNames {
@@ -74,4 +81,5 @@ class AppRouteNames {
   static const String dashboard = 'dashboard';
   static const String profile = 'profile';
   static const String subscription = 'subscription';
+  static const String calendar = 'calendar';
 }
