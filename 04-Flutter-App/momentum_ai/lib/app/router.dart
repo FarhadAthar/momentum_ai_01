@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:momentum_ai/features/profile/view/profile_screen.dart';
+import 'package:momentum_ai/features/subscription/view/subscription_screen.dart';
 
 import '../features/auth/view/login_screen.dart';
 import '../features/auth/view/signup_screen.dart';
@@ -36,6 +38,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: AppRouteNames.dashboard,
         builder: (context, state) => const DashboardScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.profile,
+        name: AppRouteNames.profile,
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.subscription,
+        name: AppRouteNames.subscription,
+        builder: (context, state) => const SubscriptionScreen(),
+      ),
     ],
   );
 });
@@ -48,6 +60,8 @@ class AppRoutes {
   static const String login = '/login';
   static const String signup = '/signup';
   static const String dashboard = '/dashboard';
+  static const String profile = '/profile';
+  static const String subscription = '/subscription';
 }
 
 class AppRouteNames {
@@ -58,4 +72,6 @@ class AppRouteNames {
   static const String login = 'login';
   static const String signup = 'signup';
   static const String dashboard = 'dashboard';
+  static const String profile = 'profile';
+  static const String subscription = 'subscription';
 }

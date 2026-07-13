@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:momentum_ai/app/router.dart';
 import 'package:momentum_ai/features/ai_chat/view/chat_screen.dart';
 
 import '../view_model/dashboard_view_model.dart';
@@ -12,25 +14,9 @@ import 'widgets/weekly_progress_chart.dart';
 import 'widgets/task_priority_card.dart';
 import 'widgets/custom_bottom_nav.dart';
 
-// 👇 YEH LINE IMPORTANT HAI (Isi line ke missing hone se error aa raha hai)
 import '../../../features/tasks/view/tasks_screen.dart';
 import '../../../features/stats/view/stats_screen.dart'; // Stats wala import bhi yahan hona chahiye
 import '../../../features/focus/view/focus_screen.dart'; // Focus wala import bhi yahan hona chahiye
-
-class AIPlaceholder extends StatelessWidget {
-  const AIPlaceholder({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(
-    child: Text(
-      "AI Assistant",
-      style: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Colors.grey,
-      ),
-    ),
-  );
-}
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -187,27 +173,32 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Container(
-                            width: 42,
-                            height: 42,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF6366F1),
-                              borderRadius: BorderRadius.circular(14),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.08),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                'A',
-                                style: GoogleFonts.spaceGrotesk(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
+                          GestureDetector(
+                            onTap: () => context.push(
+                              AppRoutes.profile,
+                            ), // 👈 YEH LINE ADD KARI
+                            child: Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF6366F1),
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.08),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  'A',
+                                  style: GoogleFonts.spaceGrotesk(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                                 ),
                               ),
                             ),
