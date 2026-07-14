@@ -1,8 +1,6 @@
 // lib/features/tasks/view/tasks_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:momentum_ai/features/tasks/view/widgets/add_task_bottom_sheet.dart';
 import '../view_model/tasks_view_model.dart';
 import '../model/task_model.dart';
 
@@ -71,6 +69,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
     }).toList();
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: const Color(0xFFF3F4F6),
       body: SafeArea(
         bottom: false,
@@ -88,7 +87,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                         children: [
                           Text(
                             '2 of 8 completed',
-                            style: GoogleFonts.manrope(
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF9CA3AF),
@@ -96,7 +95,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                           ),
                           Text(
                             'My Tasks',
-                            style: GoogleFonts.spaceGrotesk(
+                            style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF111827),
@@ -111,7 +110,6 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                         decoration: BoxDecoration(
                           color: const Color(0xFF6366F1),
                           borderRadius: BorderRadius.circular(16),
-
                           boxShadow: [
                             BoxShadow(
                               color: const Color(
@@ -124,14 +122,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                         ),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(16),
-                          // 👇 YEH ONTAP ADD KAREIN
                           onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.transparent,
-                              builder: (context) => const AddTaskBottomSheet(),
-                            );
+                            // Add Task button logic
                           },
                           child: const Icon(
                             Icons.add_rounded,
@@ -174,7 +166,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                             children: [
                               Text(
                                 'AI Task Creator',
-                                style: GoogleFonts.manrope(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF111827),
@@ -183,7 +175,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                               const SizedBox(height: 4),
                               Text(
                                 '*Finish report before Thursday 3pm*',
-                                style: GoogleFonts.manrope(
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                   color: const Color(0xFF6B7280),
@@ -223,7 +215,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                           size: 22,
                         ),
                         hintText: 'Search tasks...',
-                        hintStyle: GoogleFonts.manrope(
+                        hintStyle: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF9CA3AF),
@@ -236,6 +228,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                     ),
                   ),
                   const SizedBox(height: 20),
+
+                  // 👇 FIXED FILTER CHIPS (GestureDetector ki jagah InkWell use kiya)
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -243,44 +237,45 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                         final isSelected = _selectedFilter == filter;
                         return Padding(
                           padding: const EdgeInsets.only(right: 10),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 250),
-                            curve: Curves.easeOutCubic,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? const Color(0xFF6366F1)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(100),
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: const Color(
-                                          0xFF6366F1,
-                                        ).withValues(alpha: 0.25),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ]
-                                  : [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.04,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(100),
+                            onTap: () =>
+                                setState(() => _selectedFilter = filter),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeOutCubic,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFF6366F1)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(100),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: const Color(
+                                            0xFF6366F1,
+                                          ).withValues(alpha: 0.25),
+                                          blurRadius: 12,
+                                          offset: const Offset(0, 4),
                                         ),
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ],
-                            ),
-                            child: GestureDetector(
-                              onTap: () =>
-                                  setState(() => _selectedFilter = filter),
+                                      ]
+                                    : [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: 0.04,
+                                          ),
+                                          blurRadius: 6,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ],
+                              ),
                               child: AnimatedDefaultTextStyle(
                                 duration: const Duration(milliseconds: 250),
-                                style: GoogleFonts.manrope(
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w800,
                                   color: isSelected
@@ -296,13 +291,14 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                     ),
                   ),
                   const SizedBox(height: 20),
+
                   if (filteredTasks.isEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 40),
                       child: Center(
                         child: Text(
                           'No tasks found',
-                          style: GoogleFonts.manrope(
+                          style: TextStyle(
                             color: const Color(0xFF9CA3AF),
                             fontWeight: FontWeight.w700,
                           ),
@@ -349,6 +345,8 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
     );
   }
 }
+
+// --- Sub-Widgets ---
 
 class _AIActionButton extends StatelessWidget {
   final IconData icon;
@@ -426,6 +424,8 @@ class _TaskCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 14),
+
+          // Checkbox toggle
           GestureDetector(
             onTap: onToggle,
             child: AnimatedContainer(
@@ -455,6 +455,7 @@ class _TaskCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 14),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -474,7 +475,7 @@ class _TaskCard extends StatelessWidget {
                           ),
                           child: Text(
                             tag,
-                            style: GoogleFonts.manrope(
+                            style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
                               color: _getTagTextColor(tag),
@@ -487,7 +488,7 @@ class _TaskCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   task.title,
-                  style: GoogleFonts.manrope(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: task.isCompleted
@@ -509,7 +510,7 @@ class _TaskCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       task.time,
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF9CA3AF),
@@ -537,7 +538,7 @@ class _TaskCard extends StatelessWidget {
                             const SizedBox(width: 4),
                             Text(
                               'AI',
-                              style: GoogleFonts.manrope(
+                              style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFF9333EA),

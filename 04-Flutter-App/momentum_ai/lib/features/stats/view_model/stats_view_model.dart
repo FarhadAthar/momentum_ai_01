@@ -11,3 +11,5 @@ class StatsViewModel extends Notifier<StatsState> {
     return const StatsState();
   }
 }
+
+

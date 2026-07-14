@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../app/router.dart';
 import '../../../app/theme.dart';
@@ -426,7 +425,7 @@ class _AnimatedText extends StatelessWidget {
                   child: Text(
                     'Momentum AI',
                     textAlign: TextAlign.center,
-                    style: GoogleFonts.spaceGrotesk(
+                    style: TextStyle(
                       fontSize: 41,
                       height: 1.0,
                       fontWeight: FontWeight.w800,
@@ -451,7 +450,7 @@ class _AnimatedText extends StatelessWidget {
                 Text(
                   'Your Personal Productivity Assistant',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.manrope(
+                  style: TextStyle(
                     fontSize: 14.8,
                     height: 1.35,
                     fontWeight: FontWeight.w700,
@@ -525,7 +524,7 @@ class _AnimatedProgressBar extends StatelessWidget {
               opacity: textOpacity,
               child: Text(
                 'Building your daily momentum...',
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.1,
@@ -667,3 +666,5 @@ class _SoftPatternPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+

@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ProductivityScoreChart extends StatelessWidget {
   final List<double> values;
@@ -72,7 +71,7 @@ class ProductivityScoreChart extends StatelessWidget {
                     child: Text(
                       'Productivity Score',
                       maxLines: 1,
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
                         color: _titleColor,
@@ -129,7 +128,7 @@ class ProductivityScoreChart extends StatelessWidget {
                                     width: 1,
                                   ),
                                   titlePositionPercentageOffset: 0.16,
-                                  titleTextStyle: GoogleFonts.manrope(
+                                  titleTextStyle: TextStyle(
                                     fontSize: 7.5,
                                     fontWeight: FontWeight.w600,
                                     color: _labelColor,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class FocusScoreCard extends StatelessWidget {
   final int score;
@@ -48,7 +47,7 @@ class FocusScoreCard extends StatelessWidget {
             children: [
               Text(
                 'DAILY FOCUS SCORE',
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   color: Colors.white70,
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
@@ -73,7 +72,7 @@ class FocusScoreCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '+$increase% week',
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         color: Colors.white,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -90,7 +89,7 @@ class FocusScoreCard extends StatelessWidget {
             children: [
               Text(
                 '$score',
-                style: GoogleFonts.spaceGrotesk(
+                style: TextStyle(
                   color: Colors.white,
                   fontSize: 48,
                   fontWeight: FontWeight.w900,
@@ -98,7 +97,7 @@ class FocusScoreCard extends StatelessWidget {
               ),
               Text(
                 '/100',
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   color: Colors.white70,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -169,7 +168,7 @@ class FocusScoreCard extends StatelessWidget {
         children: [
           Text(
             value,
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               color: Colors.white,
               fontSize: 16,
               fontWeight: FontWeight.w800,
@@ -177,7 +176,7 @@ class FocusScoreCard extends StatelessWidget {
           ),
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               color: Colors.white70,
               fontSize: 11,
               fontWeight: FontWeight.w600,

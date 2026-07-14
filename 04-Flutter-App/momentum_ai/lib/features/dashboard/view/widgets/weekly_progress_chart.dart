@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class WeeklyProgressChart extends StatelessWidget {
   final VoidCallback onFullReportTap; // 👈 YEH CALLBACK ADD KIYA HAI
@@ -36,7 +35,7 @@ class WeeklyProgressChart extends StatelessWidget {
             children: [
               Text(
                 'Weekly Progress',
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF111827),
@@ -52,7 +51,7 @@ class WeeklyProgressChart extends StatelessWidget {
                   children: [
                     Text(
                       'Full Report',
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF4F46E5),
@@ -98,7 +97,7 @@ class WeeklyProgressChart extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 8.0),
                             child: Text(
                               days[index],
-                              style: GoogleFonts.manrope(
+                              style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: const Color(0xFF9CA3AF),

@@ -50,3 +50,5 @@ class FocusState {
       totalSeconds > 0 ? (totalSeconds - remainingSeconds) / totalSeconds : 0;
   int get completedSessions => currentSession - 1;
 }
+
+

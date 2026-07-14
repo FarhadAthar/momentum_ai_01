@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../view_model/chat_view_model.dart';
 import '../model/chat_model.dart';
@@ -60,6 +58,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: const Color(0xFFF3F4F6),
       body: SafeArea(
         bottom: false,
@@ -99,7 +98,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       children: [
                         Text(
                           'AI Assistant',
-                          style: GoogleFonts.manrope(
+                          style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF111827),
@@ -118,7 +117,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             const SizedBox(width: 6),
                             Text(
                               'Online • GPT-4o powered',
-                              style: GoogleFonts.manrope(
+                              style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: const Color(0xFF10B981),
@@ -212,7 +211,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   Expanded(
                     child: TextField(
                       controller: _textController,
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF111827),
@@ -221,7 +220,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       onSubmitted: (_) => _handleSend(),
                       decoration: InputDecoration(
                         hintText: 'Ask me anything...',
-                        hintStyle: GoogleFonts.manrope(
+                        hintStyle: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           color: const Color(0xFF9CA3AF),
@@ -339,7 +338,7 @@ class _ChatBubble extends StatelessWidget {
                 ),
                 child: Text(
                   message.text,
-                  style: GoogleFonts.manrope(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     height: 1.5,

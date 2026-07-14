@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 // 👇 YE IMPORT LINE SAB SE ZAROORI HAI
@@ -46,6 +45,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
     final completedSessions = state.completedSessions;
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: const Color(0xFFF3F4F6),
       body: SafeArea(
         bottom: false,
@@ -64,7 +64,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                     children: [
                       Text(
                         'Session ${state.currentSession} of $totalSessions • Pomodoro',
-                        style: GoogleFonts.manrope(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: const Color(0xFF9CA3AF),
@@ -73,7 +73,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                       const SizedBox(height: 4),
                       Text(
                         'Focus Mode',
-                        style: GoogleFonts.spaceGrotesk(
+                        style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF111827),
@@ -134,7 +134,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                         children: [
                           Text(
                             'Currently focusing on',
-                            style: GoogleFonts.manrope(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: const Color(0xFF9CA3AF),
@@ -143,7 +143,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                           const SizedBox(height: 2),
                           Text(
                             state.currentTask,
-                            style: GoogleFonts.manrope(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
                               color: const Color(0xFF111827),
@@ -179,7 +179,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                         children: [
                           Text(
                             formattedTime,
-                            style: GoogleFonts.spaceGrotesk(
+                            style: TextStyle(
                               fontSize: 48,
                               fontWeight: FontWeight.w900,
                               color: const Color(0xFF111827),
@@ -189,7 +189,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                           const SizedBox(height: 4),
                           Text(
                             'remaining',
-                            style: GoogleFonts.manrope(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF9CA3AF),
@@ -198,7 +198,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                           const SizedBox(height: 2),
                           Text(
                             '${(state.progress * 100).toStringAsFixed(0)}% complete',
-                            style: GoogleFonts.manrope(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF6366F1),
@@ -346,7 +346,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                         const SizedBox(width: 8),
                         Text(
                           'Background Sounds',
-                          style: GoogleFonts.manrope(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF111827),
@@ -402,7 +402,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                                 ),
                                 child: Text(
                                   sound,
-                                  style: GoogleFonts.manrope(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w800,
                                     color: isSelected
@@ -440,7 +440,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                   children: [
                     Text(
                       'Focus Queue',
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF111827),
@@ -488,7 +488,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                             Expanded(
                               child: Text(
                                 task,
-                                style: GoogleFonts.manrope(
+                                style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: isCurrent
                                       ? FontWeight.w800
@@ -623,7 +623,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
-            style: GoogleFonts.spaceGrotesk(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w900,
               color: const Color(0xFF111827),
@@ -632,7 +632,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF9CA3AF),

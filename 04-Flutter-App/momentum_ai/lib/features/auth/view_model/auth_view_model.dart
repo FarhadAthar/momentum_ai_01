@@ -72,3 +72,5 @@ class AuthViewModel extends Notifier<AuthState> {
     state = state.copyWith(isLoading: false);
   }
 }
+
+

@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class TimeSplitChart extends StatelessWidget {
   final List<PieChartSectionData> sections;
@@ -125,7 +124,7 @@ class TimeSplitChart extends StatelessWidget {
         child: Text(
           'Time Split',
           maxLines: 1,
-          style: GoogleFonts.manrope(
+          style: TextStyle(
             fontSize: isCompact ? 12 : 13,
             fontWeight: FontWeight.w800,
             color: _titleColor,
@@ -342,7 +341,7 @@ class _LegendRow extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.manrope(
+              style: TextStyle(
                 fontSize: fontSize,
                 height: 1,
                 fontWeight: FontWeight.w600,
@@ -362,7 +361,7 @@ class _LegendRow extends StatelessWidget {
                 percentage,
                 maxLines: 1,
                 textAlign: TextAlign.right,
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   fontSize: fontSize,
                   height: 1,
                   fontWeight: FontWeight.w800,

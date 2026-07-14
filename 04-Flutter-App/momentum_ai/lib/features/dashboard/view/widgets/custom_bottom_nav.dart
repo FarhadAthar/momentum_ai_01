@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class CustomBottomNav extends StatelessWidget {
   final int selectedIndex;
@@ -175,7 +174,7 @@ class _NavItem extends StatelessWidget {
               curve: Curves.easeOutCubic,
               textAlign: TextAlign.center,
               style: isSelected
-                  ? GoogleFonts.manrope(
+                  ? TextStyle(
                       color: const Color(0xFF6366F1),
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
@@ -190,7 +189,7 @@ class _NavItem extends StatelessWidget {
                         ),
                       ],
                     )
-                  : GoogleFonts.manrope(
+                  : TextStyle(
                       color: const Color(0xFF6B7280),
                       fontSize: 11,
                       fontWeight: FontWeight.w700,

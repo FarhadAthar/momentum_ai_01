@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import 'package:intl/intl.dart';
 import 'package:momentum_ai/features/calendar/model/calendar_state.dart';
 import '../view_model/calendar_view_model.dart';
@@ -24,6 +24,7 @@ class CalendarScreen extends ConsumerWidget {
     final formattedDate = DateFormat('MMMM d').format(state.selectedDate);
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: const Color(0xFFF3F4F6),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -38,7 +39,7 @@ class CalendarScreen extends ConsumerWidget {
         ),
         title: Text(
           monthYear,
-          style: GoogleFonts.manrope(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
             color: const Color(0xFF9CA3AF),
@@ -59,7 +60,7 @@ class CalendarScreen extends ConsumerWidget {
                 children: [
                   Text(
                     'Calendar',
-                    style: GoogleFonts.spaceGrotesk(
+                    style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF111827),
@@ -130,7 +131,7 @@ class CalendarScreen extends ConsumerWidget {
                         children: [
                           Text(
                             dayName,
-                            style: GoogleFonts.manrope(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: isSelected
@@ -141,7 +142,7 @@ class CalendarScreen extends ConsumerWidget {
                           const SizedBox(height: 4),
                           Text(
                             dayNum,
-                            style: GoogleFonts.spaceGrotesk(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w900,
                               color: isSelected
@@ -188,7 +189,7 @@ class CalendarScreen extends ConsumerWidget {
                 children: [
                   Text(
                     '$formattedDate · Events',
-                    style: GoogleFonts.manrope(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF111827),
@@ -230,7 +231,7 @@ class CalendarScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'No more events today',
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF9CA3AF),
@@ -238,7 +239,7 @@ class CalendarScreen extends ConsumerWidget {
                     ),
                     Text(
                       'Tap + to add an event',
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFFD1D5DB),
@@ -278,7 +279,7 @@ class _IntegrationChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.manrope(
+        style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w800,
           color: const Color(0xFF111827),
@@ -328,7 +329,7 @@ class _EventCard extends StatelessWidget {
               children: [
                 Text(
                   event.title,
-                  style: GoogleFonts.manrope(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF111827),
@@ -345,7 +346,7 @@ class _EventCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '${event.time} · ${event.duration}',
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF9CA3AF),
@@ -360,7 +361,7 @@ class _EventCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '${event.attendees}',
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF9CA3AF),

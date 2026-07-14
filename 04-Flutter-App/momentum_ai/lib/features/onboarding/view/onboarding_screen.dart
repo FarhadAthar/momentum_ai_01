@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:momentum_ai/features/onboarding/view/model/onboarding_page_model.dart';
 import 'package:momentum_ai/features/onboarding/view/view_model/onboarding_view_model.dart';
 
@@ -99,11 +98,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
-        systemNavigationBarColor: Color(0xFFFFF7EC),
-        systemNavigationBarIconBrightness: Brightness.dark,
-        systemNavigationBarDividerColor: Colors.transparent,
-        systemNavigationBarContrastEnforced: false,
-        systemStatusBarContrastEnforced: false,
       ),
       child: Scaffold(
         backgroundColor: const Color(0xFFFFF7EC),
@@ -188,7 +182,7 @@ class _TopBar extends StatelessWidget {
               ),
               child: Text(
                 'skip',
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
                   letterSpacing: -0.1,
@@ -331,7 +325,7 @@ class _PremiumTextBlock extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: GoogleFonts.spaceGrotesk(
+          style: TextStyle(
             fontSize: 25.5,
             height: 1.12,
             fontWeight: FontWeight.w800,
@@ -345,7 +339,7 @@ class _PremiumTextBlock extends StatelessWidget {
           child: Text(
             description,
             textAlign: TextAlign.center,
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               fontSize: 14.7,
               height: 1.56,
               fontWeight: FontWeight.w600,
@@ -394,7 +388,7 @@ class _BottomNavigation extends StatelessWidget {
                 ),
                 child: Text(
                   'back',
-                  style: GoogleFonts.manrope(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.1,
@@ -541,7 +535,7 @@ class _GetStartedButton extends StatelessWidget {
         ),
         child: Text(
           'Get started',
-          style: GoogleFonts.manrope(
+          style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w900,
             letterSpacing: -0.2,

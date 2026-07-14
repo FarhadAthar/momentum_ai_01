@@ -7,3 +7,5 @@ class SplashState {
     return SplashState(isFinished: isFinished ?? this.isFinished);
   }
 }
+
+

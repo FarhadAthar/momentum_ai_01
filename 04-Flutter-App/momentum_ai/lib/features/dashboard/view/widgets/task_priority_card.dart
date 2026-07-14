@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+
 import '../../model/dashboard_state.dart';
 
 class TaskPriorityCard extends StatelessWidget {
@@ -82,7 +82,7 @@ class TaskPriorityCard extends StatelessWidget {
                           ),
                           child: Text(
                             tag,
-                            style: GoogleFonts.manrope(
+                            style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
                               color: _getTagTextColor(tag),
@@ -95,7 +95,7 @@ class TaskPriorityCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   task.title,
-                  style: GoogleFonts.manrope(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF111827),
@@ -112,7 +112,7 @@ class TaskPriorityCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       task.timeEstimate,
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: const Color(0xFF9CA3AF),

@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class WeeklyFocusChart extends StatelessWidget {
   final List<FlSpot> data;
@@ -27,7 +26,7 @@ class WeeklyFocusChart extends StatelessWidget {
         children: [
           Text(
             'Focus Hours This Week',
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF111827),
@@ -71,7 +70,7 @@ class WeeklyFocusChart extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 10.0),
                             child: Text(
                               days[index],
-                              style: GoogleFonts.manrope(
+                              style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
                                 color: const Color(0xFF9CA3AF),

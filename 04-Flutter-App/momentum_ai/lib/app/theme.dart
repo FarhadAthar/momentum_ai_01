@@ -26,7 +26,7 @@ class AppTheme {
       brightness: Brightness.light,
       scaffoldBackgroundColor: background,
       colorScheme: colorScheme,
-      fontFamily: 'Roboto',
+      fontFamily: 'Manrope',
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -39,29 +39,36 @@ class AppTheme {
           fontWeight: FontWeight.w900,
           letterSpacing: -1.2,
           color: textDark,
+          fontFamily: 'SpaceGrotesk',
         ),
         headlineMedium: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.w800,
           letterSpacing: -0.8,
           color: textDark,
+          fontFamily: 'SpaceGrotesk',
         ),
         titleLarge: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w800,
           color: textDark,
+          fontFamily: 'SpaceGrotesk',
         ),
         bodyLarge: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w500,
           color: textDark,
+          fontFamily: 'Manrope',
         ),
         bodyMedium: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: textMuted,
+          fontFamily: 'Manrope',
         ),
       ),
     );
   }
 }
+
+

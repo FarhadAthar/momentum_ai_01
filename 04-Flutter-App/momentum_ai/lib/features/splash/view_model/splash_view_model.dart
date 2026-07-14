@@ -18,3 +18,5 @@ class SplashViewModel extends Notifier<SplashState> {
     state = state.copyWith(isFinished: true);
   }
 }
+
+

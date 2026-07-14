@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For Haptic Feedback
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
@@ -141,7 +140,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 children: [
                   Text(
                     'New Task',
-                    style: GoogleFonts.spaceGrotesk(
+                    style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF111827),
@@ -180,7 +179,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                         const SizedBox(width: 8),
                         Text(
                           'AI Auto-Extract',
-                          style: GoogleFonts.manrope(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF7C3AED),
@@ -191,7 +190,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _aiInputController,
-                      style: GoogleFonts.manrope(
+                      style: TextStyle(
                         fontStyle: FontStyle.italic,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -199,7 +198,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       ),
                       decoration: InputDecoration(
                         hintText: '"Prepare proposal for John by Friday 5pm"',
-                        hintStyle: GoogleFonts.manrope(
+                        hintStyle: TextStyle(
                           fontStyle: FontStyle.italic,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -289,7 +288,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                         children: [
                           Text(
                             'Add Task',
-                            style: GoogleFonts.manrope(
+                            style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w900,
                               color: Colors.white,
@@ -329,14 +328,14 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
       ),
       child: TextFormField(
         controller: controller,
-        style: GoogleFonts.manrope(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w700,
           color: const Color(0xFF111827),
         ),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.manrope(
+          labelStyle: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
             color: const Color(0xFF9CA3AF),
@@ -377,7 +376,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               const SizedBox(width: 10),
               Text(
                 label,
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF9CA3AF),
@@ -389,7 +388,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
             children: [
               Text(
                 value,
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: value == 'Tap to pick'
@@ -433,7 +432,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
             padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
             child: Text(
               'Priority',
-              style: GoogleFonts.manrope(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF9CA3AF),
@@ -477,7 +476,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   ),
                   child: Text(
                     p,
-                    style: GoogleFonts.manrope(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
                       color: isSelected
@@ -510,7 +509,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
             padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
             child: Text(
               'Category',
-              style: GoogleFonts.manrope(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF9CA3AF),
@@ -546,7 +545,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   ),
                   child: Text(
                     cat,
-                    style: GoogleFonts.manrope(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
                       color: isSelected

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AICoachCard extends StatelessWidget {
   const AICoachCard({super.key});
@@ -35,7 +34,7 @@ class AICoachCard extends StatelessWidget {
               children: [
                 Text(
                   'AI Productivity Coach',
-                  style: GoogleFonts.manrope(
+                  style: TextStyle(
                     color: const Color(0xFF4E342E),
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -44,7 +43,7 @@ class AICoachCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'You have 3 overdue tasks. Your peak focus is 9–11AM — deep work now before your standup!',
-                  style: GoogleFonts.manrope(
+                  style: TextStyle(
                     color: const Color(0xFF5D4037),
                     fontSize: 13,
                     fontWeight: FontWeight.w600,

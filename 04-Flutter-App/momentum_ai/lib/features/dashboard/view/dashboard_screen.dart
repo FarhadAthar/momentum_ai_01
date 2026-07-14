@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:momentum_ai/app/router.dart';
 import 'package:momentum_ai/features/ai_chat/view/chat_screen.dart';
@@ -59,6 +58,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     }
   }
 
+  // 👇 NEW METHOD: Tasks tab par navigate karne ke liye
+  void _goToTasks() {
+    if (_selectedIndex != 1) {
+      setState(() {
+        _selectedIndex = 1;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(dashboardViewModelProvider);
@@ -67,16 +75,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
     // 👇 BEST PRACTICE: PopScope se Back Button behavior control kiya
     return PopScope(
-      canPop: _selectedIndex == 0, // Sirf Home tab par True (App close hogi)
+      canPop: _selectedIndex == 0,
       onPopInvoked: (didPop) {
-        // Agar pop block hua (matlab user kisi aur tab se back kar raha tha)
         if (!didPop && _selectedIndex != 0) {
           setState(() {
-            _selectedIndex = 0; // Wapas Home par le jaao
+            _selectedIndex = 0;
           });
         }
       },
       child: Scaffold(
+        extendBody: true,
         backgroundColor: const Color(0xFFF3F4F6),
         body: SafeArea(
           bottom: false,
@@ -101,7 +109,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                 children: [
                                   Text(
                                     formattedDate,
-                                    style: GoogleFonts.manrope(
+                                    style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                       color: const Color(0xFF9CA3AF),
@@ -110,7 +118,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                   const SizedBox(height: 4),
                                   Text(
                                     'Good morning,',
-                                    style: GoogleFonts.spaceGrotesk(
+                                    style: TextStyle(
                                       fontSize: 26,
                                       fontWeight: FontWeight.w600,
                                       color: const Color(0xFF111827),
@@ -120,7 +128,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                     children: [
                                       Text(
                                         '${state.userName}!',
-                                        style: GoogleFonts.spaceGrotesk(
+                                        style: TextStyle(
                                           fontSize: 26,
                                           fontWeight: FontWeight.w800,
                                           color: const Color(0xFF111827),
@@ -137,57 +145,61 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                               ),
                             ),
                             const SizedBox(width: 12),
-                            SizedBox(
-                              width: 42,
-                              height: 42,
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  Container(
-                                    width: 42,
-                                    height: 42,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(14),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(
-                                            alpha: 0.06,
+                            GestureDetector(
+                              onTap: () =>
+                                  context.push(AppRoutes.notifications),
+                              child: SizedBox(
+                                width: 42,
+                                height: 42,
+                                child: Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    Container(
+                                      width: 42,
+                                      height: 42,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(14),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withValues(
+                                              alpha: 0.06,
+                                            ),
+                                            blurRadius: 10,
+                                            offset: const Offset(0, 4),
                                           ),
-                                          blurRadius: 10,
-                                          offset: const Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.notifications_none_rounded,
-                                        color: Color(0xFF111827),
-                                        size: 22,
+                                        ],
                                       ),
-                                    ),
-                                  ),
-                                  if (state.notificationCount > 0)
-                                    Positioned(
-                                      right: -2,
-                                      top: -2,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        decoration: const BoxDecoration(
-                                          color: Color(0xFFEF4444),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Text(
-                                          '${state.notificationCount}',
-                                          style: GoogleFonts.manrope(
-                                            color: Colors.white,
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.w900,
-                                          ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.notifications_none_rounded,
+                                          color: Color(0xFF111827),
+                                          size: 22,
                                         ),
                                       ),
                                     ),
-                                ],
+                                    if (state.notificationCount > 0)
+                                      Positioned(
+                                        right: -2,
+                                        top: -2,
+                                        child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          decoration: const BoxDecoration(
+                                            color: Color(0xFFEF4444),
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: Text(
+                                            '${state.notificationCount}',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 9,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -212,7 +224,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                 child: Center(
                                   child: Text(
                                     'A',
-                                    style: GoogleFonts.spaceGrotesk(
+                                    style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w900,
@@ -240,9 +252,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                         const SizedBox(height: 16),
 
                         // --- Weekly Progress (Clickable to Stats) ---
-                        WeeklyProgressChart(
-                          onFullReportTap: _goToStats, // 👈 Function pass kiya
-                        ),
+                        WeeklyProgressChart(onFullReportTap: _goToStats),
                         const SizedBox(height: 16),
 
                         // --- Upcoming Meetings ---
@@ -251,7 +261,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                           children: [
                             Text(
                               'Upcoming Meetings',
-                              style: GoogleFonts.manrope(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFF111827),
@@ -267,7 +277,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                 children: [
                                   Text(
                                     'Calendar',
-                                    style: GoogleFonts.manrope(
+                                    style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                       color: const Color(0xFF4F46E5),
@@ -319,7 +329,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                     children: [
                                       Text(
                                         meeting.title,
-                                        style: GoogleFonts.manrope(
+                                        style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w700,
                                           color: const Color(0xFF111827),
@@ -336,7 +346,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                           const SizedBox(width: 4),
                                           Text(
                                             meeting.time,
-                                            style: GoogleFonts.manrope(
+                                            style: TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                               color: const Color(0xFF9CA3AF),
@@ -351,7 +361,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                           const SizedBox(width: 4),
                                           Text(
                                             '${meeting.peopleCount} people',
-                                            style: GoogleFonts.manrope(
+                                            style: TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
                                               color: const Color(0xFF9CA3AF),
@@ -374,14 +384,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                           children: [
                             Text(
                               'Today\'s Priorities',
-                              style: GoogleFonts.manrope(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFF111827),
                               ),
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: _goToTasks,
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -390,7 +400,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                 children: [
                                   Text(
                                     'See all',
-                                    style: GoogleFonts.manrope(
+                                    style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
                                       color: const Color(0xFF4F46E5),

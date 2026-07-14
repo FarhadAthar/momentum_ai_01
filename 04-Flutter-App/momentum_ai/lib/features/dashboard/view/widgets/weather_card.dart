@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class WeatherCard extends StatelessWidget {
   const WeatherCard({super.key});
@@ -35,7 +34,7 @@ class WeatherCard extends StatelessWidget {
                   child: Text(
                     'Karachi • 32°C • Sunny',
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.manrope(
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
@@ -59,10 +58,7 @@ class WeatherCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '12km/h',
-                    style: GoogleFonts.manrope(
-                      color: Colors.white70,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),
@@ -77,10 +73,7 @@ class WeatherCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '42%',
-                    style: GoogleFonts.manrope(
-                      color: Colors.white70,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),

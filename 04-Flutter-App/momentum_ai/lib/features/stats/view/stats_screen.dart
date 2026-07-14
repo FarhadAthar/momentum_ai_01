@@ -1,7 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../view_model/stats_view_model.dart';
 import 'widgets/productivity_score_chart.dart';
@@ -49,6 +48,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
         : _fallbackTimeSplitSections;
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: const Color(0xFFF3F4F6),
       body: SafeArea(
         bottom: false,
@@ -176,7 +176,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                 'July 2025 • Week 2',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF9CA3AF),
@@ -189,7 +189,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
                 child: Text(
                   'Analytics',
                   maxLines: 1,
-                  style: GoogleFonts.spaceGrotesk(
+                  style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF111827),
@@ -222,7 +222,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
             children: [
               Text(
                 'Weekly',
-                style: GoogleFonts.manrope(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF111827),
@@ -302,7 +302,7 @@ class _StatCard extends StatelessWidget {
           _ResponsiveCardText(
             text: value,
             height: 34,
-            style: GoogleFonts.spaceGrotesk(
+            style: TextStyle(
               fontSize: 27,
               height: 1,
               fontWeight: FontWeight.w800,
@@ -317,7 +317,7 @@ class _StatCard extends StatelessWidget {
           _ResponsiveCardText(
             text: label,
             height: 18,
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               fontSize: 12,
               height: 1,
               fontWeight: FontWeight.w700,
@@ -331,7 +331,7 @@ class _StatCard extends StatelessWidget {
           _ResponsiveCardText(
             text: trend,
             height: 16,
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               fontSize: 11,
               height: 1,
               fontWeight: FontWeight.w800,
@@ -418,7 +418,7 @@ class _AICoachingCard extends StatelessWidget {
                   'AI Weekly Coaching',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.manrope(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
@@ -435,7 +435,7 @@ class _AICoachingCard extends StatelessWidget {
             'best Tuesday yet. You have six recurring tasks delayed. '
             'Schedule them during your 2–3 PM low-energy window. '
             'Your work-life balance also needs attention.',
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
               color: Colors.white.withValues(alpha: 0.88),
@@ -497,7 +497,7 @@ class _AICoachingChip extends StatelessWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.manrope(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w900,
                 color: Colors.white,
@@ -507,7 +507,7 @@ class _AICoachingChip extends StatelessWidget {
               subtitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.manrope(
+              style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
                 color: Colors.white.withValues(alpha: 0.65),

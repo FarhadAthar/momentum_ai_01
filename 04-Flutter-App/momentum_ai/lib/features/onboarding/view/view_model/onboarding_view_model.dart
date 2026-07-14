@@ -17,3 +17,5 @@ class OnboardingViewModel extends Notifier<OnboardingState> {
     state = state.copyWith(currentPage: pageIndex);
   }
 }
+
+

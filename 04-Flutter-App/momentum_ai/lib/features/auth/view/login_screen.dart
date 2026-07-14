@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../app/router.dart';
 import '../../../app/theme.dart';
@@ -91,7 +90,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       SnackBar(
         content: Text(
           'Google sign in placeholder ready',
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
+          style: TextStyle(fontWeight: FontWeight.w700),
         ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppTheme.textDark,
@@ -110,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       SnackBar(
         content: Text(
           'Apple sign in placeholder ready',
-          style: GoogleFonts.manrope(fontWeight: FontWeight.w700),
+          style: TextStyle(fontWeight: FontWeight.w700),
         ),
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppTheme.textDark,
@@ -197,7 +196,7 @@ class _LoginHeader extends StatelessWidget {
         Text(
           'Sign In',
           textAlign: TextAlign.center,
-          style: GoogleFonts.spaceGrotesk(
+          style: TextStyle(
             fontSize: 37,
             height: 1.0,
             fontWeight: FontWeight.w800,
@@ -209,7 +208,7 @@ class _LoginHeader extends StatelessWidget {
         Text(
           'Unlock your momentum with AI guidance.',
           textAlign: TextAlign.center,
-          style: GoogleFonts.manrope(
+          style: TextStyle(
             fontSize: 15,
             height: 1.42,
             fontWeight: FontWeight.w600,
@@ -384,7 +383,7 @@ class _FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: GoogleFonts.manrope(
+      style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w800,
         letterSpacing: 0.15,
@@ -432,7 +431,7 @@ class _PremiumTextField extends StatelessWidget {
       validator: validator,
       onFieldSubmitted: onSubmitted,
       cursorColor: AppTheme.primaryBlue,
-      style: GoogleFonts.manrope(
+      style: TextStyle(
         fontSize: 15.5,
         fontWeight: FontWeight.w700,
         color: AppTheme.textDark,
@@ -440,7 +439,7 @@ class _PremiumTextField extends StatelessWidget {
       decoration: InputDecoration(
         isDense: true,
         hintText: hintText,
-        hintStyle: GoogleFonts.manrope(
+        hintStyle: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w600,
           color: const Color(0xFF858B98),
@@ -489,7 +488,7 @@ class _PremiumTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
           borderSide: const BorderSide(color: Color(0xFFE5484D), width: 1.55),
         ),
-        errorStyle: GoogleFonts.manrope(
+        errorStyle: TextStyle(
           fontSize: 11.5,
           height: 1.1,
           fontWeight: FontWeight.w700,
@@ -550,7 +549,7 @@ class _RememberForgotRow extends StatelessWidget {
         const SizedBox(width: 9),
         Text(
           'Remember me',
-          style: GoogleFonts.manrope(
+          style: TextStyle(
             fontSize: 13.4,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.1,
@@ -568,7 +567,7 @@ class _RememberForgotRow extends StatelessWidget {
           ),
           child: Text(
             'Forgot Password?',
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               fontSize: 13.4,
               fontWeight: FontWeight.w900,
               letterSpacing: -0.15,
@@ -639,7 +638,7 @@ class _PrimaryLoginButton extends StatelessWidget {
                     : Text(
                         'Log In',
                         key: const ValueKey('login-text'),
-                        style: GoogleFonts.manrope(
+                        style: TextStyle(
                           fontSize: 16.5,
                           fontWeight: FontWeight.w900,
                           letterSpacing: -0.25,
@@ -667,7 +666,7 @@ class _SocialDivider extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             'Log in with social account',
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               fontSize: 12.6,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.25,
@@ -785,7 +784,7 @@ class _SignupFooter extends StatelessWidget {
         children: [
           Text(
             'Don’t have an account? ',
-            style: GoogleFonts.manrope(
+            style: TextStyle(
               fontSize: 14.2,
               fontWeight: FontWeight.w600,
               color: AppTheme.textDark.withValues(alpha: 0.88),
@@ -795,7 +794,7 @@ class _SignupFooter extends StatelessWidget {
             onTap: onSignupTap,
             child: Text(
               'Sign Up',
-              style: GoogleFonts.manrope(
+              style: TextStyle(
                 fontSize: 14.2,
                 fontWeight: FontWeight.w900,
                 color: AppTheme.primaryViolet,
@@ -935,3 +934,5 @@ class _LoginBackgroundPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+
