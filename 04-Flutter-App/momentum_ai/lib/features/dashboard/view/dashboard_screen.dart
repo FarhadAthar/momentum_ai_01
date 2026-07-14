@@ -58,7 +58,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     }
   }
 
-  // 👇 NEW METHOD: Tasks tab par navigate karne ke liye
   void _goToTasks() {
     if (_selectedIndex != 1) {
       setState(() {
@@ -67,13 +66,20 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     }
   }
 
+  // Premium Feature: Dynamic Greeting based on time
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(dashboardViewModelProvider);
     final now = DateTime.now();
     final formattedDate = DateFormat('EEEE, MMMM d · h:mm a').format(now);
 
-    // 👇 BEST PRACTICE: PopScope se Back Button behavior control kiya
     return PopScope(
       canPop: _selectedIndex == 0,
       onPopInvoked: (didPop) {
@@ -99,6 +105,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // --- Top Header ---
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,29 +116,32 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                 children: [
                                   Text(
                                     formattedDate,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF9CA3AF),
+                                      color: Color(0xFF9CA3AF),
+                                      fontFamily: 'Manrope',
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Good morning,',
-                                    style: TextStyle(
+                                    '${_getGreeting()},',
+                                    style: const TextStyle(
                                       fontSize: 26,
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF111827),
+                                      color: Color(0xFF111827),
+                                      fontFamily: 'SpaceGrotesk',
                                     ),
                                   ),
                                   Row(
                                     children: [
                                       Text(
                                         '${state.userName}!',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 26,
-                                          fontWeight: FontWeight.w800,
-                                          color: const Color(0xFF111827),
+                                          fontWeight: FontWeight.w900,
+                                          color: Color(0xFF111827),
+                                          fontFamily: 'SpaceGrotesk',
                                         ),
                                       ),
                                       const SizedBox(width: 8),
@@ -145,6 +155,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                               ),
                             ),
                             const SizedBox(width: 12),
+
+                            // --- Notification Bell ---
                             GestureDetector(
                               onTap: () =>
                                   context.push(AppRoutes.notifications),
@@ -190,10 +202,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                           ),
                                           child: Text(
                                             '${state.notificationCount}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 9,
                                               fontWeight: FontWeight.w900,
+                                              fontFamily: 'Manrope',
                                             ),
                                           ),
                                         ),
@@ -203,6 +216,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                               ),
                             ),
                             const SizedBox(width: 12),
+
+                            // --- Profile Avatar ---
                             GestureDetector(
                               onTap: () => context.push(AppRoutes.profile),
                               child: Container(
@@ -221,13 +236,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                     ),
                                   ],
                                 ),
-                                child: Center(
+                                child: const Center(
                                   child: Text(
                                     'A',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
                                       fontWeight: FontWeight.w900,
+                                      fontFamily: 'SpaceGrotesk',
                                     ),
                                   ),
                                 ),
@@ -236,8 +252,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                           ],
                         ),
                         const SizedBox(height: 20),
+
+                        // --- Weather Card ---
                         const WeatherCard(),
                         const SizedBox(height: 16),
+
+                        // --- Focus Score Card ---
                         FocusScoreCard(
                           score: state.dailyFocusScore,
                           increase: state.weeklyFocusIncrease,
@@ -248,10 +268,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                           xp: state.xp,
                         ),
                         const SizedBox(height: 16),
+
+                        // --- AI Coach Card ---
                         const AICoachCard(),
                         const SizedBox(height: 16),
 
-                        // --- Weekly Progress (Clickable to Stats) ---
+                        // --- Weekly Progress ---
                         WeeklyProgressChart(onFullReportTap: _goToStats),
                         const SizedBox(height: 16),
 
@@ -259,12 +281,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Upcoming Meetings',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFF111827),
+                                color: Color(0xFF111827),
+                                fontFamily: 'Manrope',
                               ),
                             ),
                             TextButton(
@@ -273,18 +296,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                 padding: EdgeInsets.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   Text(
                                     'Calendar',
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF4F46E5),
+                                      color: Color(0xFF4F46E5),
+                                      fontFamily: 'Manrope',
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
-                                  const Icon(
+                                  SizedBox(width: 4),
+                                  Icon(
                                     Icons.arrow_forward_rounded,
                                     size: 16,
                                     color: Color(0xFF4F46E5),
@@ -329,10 +353,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                     children: [
                                       Text(
                                         meeting.title,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w700,
-                                          color: const Color(0xFF111827),
+                                          color: Color(0xFF111827),
+                                          fontFamily: 'Manrope',
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -346,10 +371,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                           const SizedBox(width: 4),
                                           Text(
                                             meeting.time,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
-                                              color: const Color(0xFF9CA3AF),
+                                              color: Color(0xFF9CA3AF),
+                                              fontFamily: 'Manrope',
                                             ),
                                           ),
                                           const SizedBox(width: 12),
@@ -361,10 +387,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                           const SizedBox(width: 4),
                                           Text(
                                             '${meeting.peopleCount} people',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 12,
                                               fontWeight: FontWeight.w600,
-                                              color: const Color(0xFF9CA3AF),
+                                              color: Color(0xFF9CA3AF),
+                                              fontFamily: 'Manrope',
                                             ),
                                           ),
                                         ],
@@ -378,16 +405,86 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                         ),
                         const SizedBox(height: 20),
 
+                        // --- Premium Habit Tracker Card (Newly Added) ---
+                        GestureDetector(
+                          onTap: () => context.push(AppRoutes.habits),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.04),
+                                  blurRadius: 16,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFF3E5F5),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.self_improvement_rounded,
+                                    color: Color(0xFF6366F1),
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: const [
+                                      Text(
+                                        'Habit Tracker',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w800,
+                                          color: Color(0xFF111827),
+                                          fontFamily: 'Manrope',
+                                        ),
+                                      ),
+                                      SizedBox(height: 2),
+                                      Text(
+                                        '3 of 4 habits done today',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF6B7280),
+                                          fontFamily: 'Manrope',
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 14,
+                                  color: Color(0xFF9CA3AF),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
                         // --- Today's Priorities ---
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               'Today\'s Priorities',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
-                                color: const Color(0xFF111827),
+                                color: Color(0xFF111827),
+                                fontFamily: 'Manrope',
                               ),
                             ),
                             TextButton(
@@ -396,18 +493,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                                 padding: EdgeInsets.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   Text(
                                     'See all',
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF4F46E5),
+                                      color: Color(0xFF4F46E5),
+                                      fontFamily: 'Manrope',
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
-                                  const Icon(
+                                  SizedBox(width: 4),
+                                  Icon(
                                     Icons.arrow_forward_rounded,
                                     size: 16,
                                     color: Color(0xFF4F46E5),
