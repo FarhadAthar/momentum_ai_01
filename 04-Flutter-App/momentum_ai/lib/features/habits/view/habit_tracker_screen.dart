@@ -246,14 +246,12 @@ class HabitTrackerScreen extends ConsumerWidget {
               const SizedBox(height: 20),
 
               // --- Habit List ---
-              ...state.habits
-                  .map(
-                    (habit) => _HabitCard(
-                      habit: habit,
-                      onToggle: () => notifier.toggleHabit(habit.id),
-                    ),
-                  )
-                  .toList(),
+              ...state.habits.map(
+                (habit) => _HabitCard(
+                  habit: habit,
+                  onToggle: () => notifier.toggleHabit(habit.id),
+                ),
+              ),
               const SizedBox(height: 20),
             ],
           ),

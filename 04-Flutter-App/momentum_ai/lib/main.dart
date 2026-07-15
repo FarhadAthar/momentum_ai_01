@@ -11,8 +11,10 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Color(0xFFF3F4F6),
+      // 👇 YAHAN NATIVE BAR COLOR WHITE SET KIYA HAI
+      systemNavigationBarColor: Colors.white,
       systemNavigationBarDividerColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: false,
       statusBarIconBrightness: Brightness.dark,
       statusBarBrightness: Brightness.light,
       systemNavigationBarIconBrightness: Brightness.dark,

@@ -6,12 +6,12 @@ import 'package:momentum_ai/app/router.dart';
 import 'package:momentum_ai/features/ai_chat/view/chat_screen.dart';
 
 import '../view_model/dashboard_view_model.dart';
+import '../model/dashboard_state.dart';
 import 'widgets/weather_card.dart';
 import 'widgets/focus_score_card.dart';
 import 'widgets/ai_coach_card.dart';
 import 'widgets/weekly_progress_chart.dart';
 import 'widgets/task_priority_card.dart';
-import 'widgets/custom_bottom_nav.dart';
 
 import '../../../features/tasks/view/tasks_screen.dart';
 import '../../../features/stats/view/stats_screen.dart';
@@ -24,29 +24,11 @@ class DashboardScreen extends ConsumerStatefulWidget {
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends ConsumerState<DashboardScreen>
-    with SingleTickerProviderStateMixin {
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   int _selectedIndex = 0;
-  late final AnimationController _navController;
-  late final Animation<Offset> _navOffset;
-
-  @override
-  void initState() {
-    super.initState();
-    _navController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-    _navOffset = Tween<Offset>(begin: const Offset(0, 1.4), end: Offset.zero)
-        .animate(
-          CurvedAnimation(parent: _navController, curve: Curves.easeOutQuart),
-        );
-    _navController.forward();
-  }
 
   @override
   void dispose() {
-    _navController.dispose();
     super.dispose();
   }
 
@@ -80,9 +62,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
     final now = DateTime.now();
     final formattedDate = DateFormat('EEEE, MMMM d · h:mm a').format(now);
 
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+
     return PopScope(
       canPop: _selectedIndex == 0,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (!didPop && _selectedIndex != 0) {
           setState(() {
             _selectedIndex = 0;
@@ -101,7 +85,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 children: [
                   // 0. Home Dashboard
                   SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+                    padding: EdgeInsets.fromLTRB(20, 16, 20, 85 + bottomInset),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -275,137 +259,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
                         // --- Weekly Progress ---
                         WeeklyProgressChart(onFullReportTap: _goToStats),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
 
                         // --- Upcoming Meetings ---
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Upcoming Meetings',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFF111827),
-                                fontFamily: 'Manrope',
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () => context.push(AppRoutes.calendar),
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: const Row(
-                                children: [
-                                  Text(
-                                    'Calendar',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xFF4F46E5),
-                                      fontFamily: 'Manrope',
-                                    ),
-                                  ),
-                                  SizedBox(width: 4),
-                                  Icon(
-                                    Icons.arrow_forward_rounded,
-                                    size: 16,
-                                    color: Color(0xFF4F46E5),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        ...state.meetings.map(
-                          (meeting) => Container(
-                            margin: const EdgeInsets.only(bottom: 10),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xFF6366F1),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        meeting.title,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: Color(0xFF111827),
-                                          fontFamily: 'Manrope',
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.access_time_rounded,
-                                            size: 14,
-                                            color: Color(0xFF9CA3AF),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            meeting.time,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF9CA3AF),
-                                              fontFamily: 'Manrope',
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          const Icon(
-                                            Icons.people_outline_rounded,
-                                            size: 14,
-                                            color: Color(0xFF9CA3AF),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '${meeting.peopleCount} people',
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              color: Color(0xFF9CA3AF),
-                                              fontFamily: 'Manrope',
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
+                        _buildUpcomingMeetingsSection(state.meetings),
+                        const SizedBox(height: 28),
 
-                        // --- Premium Habit Tracker Card (Newly Added) ---
+                        // --- Premium Habit Tracker Card ---
                         GestureDetector(
                           onTap: () => context.push(AppRoutes.habits),
                           child: Container(
@@ -472,7 +332,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 28),
 
                         // --- Today's Priorities ---
                         Row(
@@ -538,25 +398,329 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                 ],
               ),
 
-              // Custom Bottom Nav
+              // --- Premium Simple Bottom Navigation Bar ---
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: SlideTransition(
-                  position: _navOffset,
-                  child: CustomBottomNav(
-                    selectedIndex: _selectedIndex,
-                    onItemTapped: (index) {
-                      if (_selectedIndex != index) {
-                        setState(() => _selectedIndex = index);
-                      }
-                    },
+                child: Container(
+                  height: 80 + bottomInset,
+                  padding: EdgeInsets.only(top: 8, bottom: bottomInset),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: const Border(
+                      top: BorderSide(color: Color(0xFFE5E7EB), width: 1.0),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _NavItem(
+                        index: 0,
+                        icon: Icons.home_rounded,
+                        label: 'Home',
+                        selectedIndex: _selectedIndex,
+                        onTap: (index) {
+                          if (_selectedIndex != index) {
+                            setState(() => _selectedIndex = index);
+                          }
+                        },
+                      ),
+                      _NavItem(
+                        index: 1,
+                        icon: Icons.checklist_rounded,
+                        label: 'Tasks',
+                        selectedIndex: _selectedIndex,
+                        onTap: (index) {
+                          if (_selectedIndex != index) {
+                            setState(() => _selectedIndex = index);
+                          }
+                        },
+                      ),
+                      _NavItem(
+                        index: 2,
+                        icon: Icons.bolt_rounded,
+                        label: 'Focus',
+                        selectedIndex: _selectedIndex,
+                        onTap: (index) {
+                          if (_selectedIndex != index) {
+                            setState(() => _selectedIndex = index);
+                          }
+                        },
+                      ),
+                      _NavItem(
+                        index: 3,
+                        icon: Icons.analytics_rounded,
+                        label: 'Stats',
+                        selectedIndex: _selectedIndex,
+                        onTap: (index) {
+                          if (_selectedIndex != index) {
+                            setState(() => _selectedIndex = index);
+                          }
+                        },
+                      ),
+                      _NavItem(
+                        index: 4,
+                        icon: Icons.chat_bubble_outline_rounded,
+                        label: 'AI',
+                        selectedIndex: _selectedIndex,
+                        onTap: (index) {
+                          if (_selectedIndex != index) {
+                            setState(() => _selectedIndex = index);
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // --- Helper: Meetings Section ---
+  Widget _buildUpcomingMeetingsSection(List<MeetingModel> meetings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Upcoming Meetings',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF111827),
+                fontFamily: 'Manrope',
+              ),
+            ),
+            TextButton(
+              onPressed: () => context.push(AppRoutes.calendar),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Row(
+                children: [
+                  Text(
+                    'Calendar',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF4F46E5),
+                      fontFamily: 'Manrope',
+                    ),
+                  ),
+                  SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 16,
+                    color: Color(0xFF4F46E5),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (meetings.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: Center(
+              child: Text(
+                'No upcoming meetings',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[500],
+                  fontFamily: 'Manrope',
+                ),
+              ),
+            ),
+          )
+        else
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: meetings.asMap().entries.map((entry) {
+              final meeting = entry.value;
+              final widthFactor = meetings.length == 1 ? 1.0 : 0.48;
+              return SizedBox(
+                width: MediaQuery.of(context).size.width * widthFactor - 20,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF6366F1),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        meeting.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF111827),
+                          fontFamily: 'Manrope',
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.access_time_rounded,
+                            size: 14,
+                            color: Color(0xFF9CA3AF),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            meeting.time,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF9CA3AF),
+                              fontFamily: 'Manrope',
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.people_outline_rounded,
+                            size: 14,
+                            color: Color(0xFF9CA3AF),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${meeting.peopleCount} people',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF9CA3AF),
+                              fontFamily: 'Manrope',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+      ],
+    );
+  }
+}
+
+// --- Premium Simple Bottom Navigation Item (Fast Animation) ---
+class _NavItem extends StatelessWidget {
+  final int index;
+  final IconData icon;
+  final String label;
+  final int selectedIndex;
+  final Function(int) onTap;
+
+  const _NavItem({
+    required this.index,
+    required this.icon,
+    required this.label,
+    required this.selectedIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isSelected = selectedIndex == index;
+
+    return InkWell(
+      onTap: () => onTap(index),
+      borderRadius: BorderRadius.circular(24),
+      child: SizedBox(
+        width: 72,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Fixed 48x48 container for icon
+            AnimatedContainer(
+              // 👇 FAST ANIMATION: Duration 100ms kar diya
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeOutQuart,
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                gradient: isSelected
+                    ? const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                      )
+                    : null,
+                color: isSelected ? null : Colors.transparent,
+                shape: BoxShape.circle,
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: const Color(
+                            0xFF6366F1,
+                          ).withValues(alpha: 0.25),
+                          blurRadius: 12,
+                          offset: const Offset(0, 6),
+                        ),
+                      ]
+                    : [],
+              ),
+              child: Icon(
+                icon,
+                color: isSelected ? Colors.white : const Color(0xFF6B7280),
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
+                color: isSelected
+                    ? const Color(0xFF6366F1)
+                    : const Color(0xFF6B7280),
+                fontFamily: 'Manrope',
+              ),
+            ),
+          ],
         ),
       ),
     );

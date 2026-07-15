@@ -3,7 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class AddTaskBottomSheet extends StatefulWidget {
-  const AddTaskBottomSheet({super.key});
+  final Function(
+    String title,
+    String deadline,
+    String priority,
+    String category,
+    String estimate,
+  )
+  onTaskAdded;
+
+  const AddTaskBottomSheet({super.key, required this.onTaskAdded});
 
   @override
   State<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
@@ -255,7 +264,23 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 child: ElevatedButton(
                   onPressed: () {
                     HapticFeedback.lightImpact();
-                    // Logic to save task to state/backend
+                    // Extract values
+                    final title = _titleController.text.trim();
+                    final deadline =
+                        _formatDateTime(); // You can also store raw date
+                    final priority = _selectedPriority ?? 'Medium';
+                    final category = _selectedCategory ?? 'Work';
+                    final estimate =
+                        '2 hours'; // Could add a controller for this
+
+                    // Call the callback
+                    widget.onTaskAdded(
+                      title,
+                      deadline,
+                      priority,
+                      category,
+                      estimate,
+                    );
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(

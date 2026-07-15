@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../view_model/profile_view_model.dart';
-import '../../../app/router.dart'; // 👈 Ensure this import exists
+import '../../../app/router.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -27,13 +27,13 @@ class ProfileScreen extends ConsumerWidget {
         extendBody: true,
         backgroundColor: const Color(0xFFF3F4F6),
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
           systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
             statusBarIconBrightness: Brightness.dark,
             statusBarBrightness: Brightness.dark,
           ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
           leading: IconButton(
             icon: const FaIcon(
               FontAwesomeIcons.arrowLeft,
@@ -45,10 +45,11 @@ class ProfileScreen extends ConsumerWidget {
           centerTitle: false,
           title: Text(
             'Profile',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF111827),
+              color: Color(0xFF111827),
+              fontFamily: 'SpaceGrotesk',
             ),
           ),
         ),
@@ -87,35 +88,38 @@ class ProfileScreen extends ConsumerWidget {
                           children: [
                             Text(
                               state.name,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,
                                 color: Colors.white,
+                                fontFamily: 'SpaceGrotesk',
                               ),
                             ),
                             Text(
                               state.role,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.white.withValues(alpha: 0.8),
+                                color: Colors.white,
+                                fontFamily: 'Manrope',
                               ),
                             ),
                             const SizedBox(height: 4),
                             Row(
                               children: [
-                                FaIcon(
+                                const FaIcon(
                                   FontAwesomeIcons.crown,
                                   size: 14,
-                                  color: const Color(0xFFFBBF24),
+                                  color: Color(0xFFFBBF24),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
                                   'Level ${state.level} · Pro',
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w800,
-                                    color: const Color(0xFFFBBF24),
+                                    color: Color(0xFFFBBF24),
+                                    fontFamily: 'Manrope',
                                   ),
                                 ),
                               ],
@@ -138,24 +142,25 @@ class ProfileScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // XP Progress Bar
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'XP Progress - Level ${state.level}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white.withValues(alpha: 0.8),
+                          color: Colors.white,
+                          fontFamily: 'Manrope',
                         ),
                       ),
                       Text(
                         '${state.currentXp} / ${state.maxXp} XP',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
+                          fontFamily: 'Manrope',
                         ),
                       ),
                     ],
@@ -175,10 +180,11 @@ class ProfileScreen extends ConsumerWidget {
                   const SizedBox(height: 6),
                   Text(
                     '${state.maxXp - state.currentXp} XP to Level ${state.level + 1}',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white.withValues(alpha: 0.6),
+                      color: Colors.white,
+                      fontFamily: 'Manrope',
                     ),
                   ),
                 ],
@@ -281,24 +287,25 @@ class ProfileScreen extends ConsumerWidget {
                       children: [
                         Text(
                           'Upgrade to Pro',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
+                            fontFamily: 'Manrope',
                           ),
                         ),
                         Text(
                           'Unlimited AI · Analytics · Coaching',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: Colors.white.withValues(alpha: 0.9),
+                            color: Colors.white,
+                            fontFamily: 'Manrope',
                           ),
                         ),
                       ],
                     ),
                   ),
-                  // 👇 FIX: GestureDetector + onTap add kar diya hai
                   GestureDetector(
                     onTap: () => context.push(AppRoutes.subscription),
                     child: Container(
@@ -312,10 +319,11 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       child: Text(
                         'View Plans',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: Colors.white,
+                          fontFamily: 'Manrope',
                         ),
                       ),
                     ),
@@ -329,10 +337,11 @@ class ProfileScreen extends ConsumerWidget {
             // --- Achievements Section ---
             Text(
               'Achievements',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: const Color(0xFF111827),
+                color: Color(0xFF111827),
+                fontFamily: 'Manrope',
               ),
             ),
             const SizedBox(height: 12),
@@ -383,12 +392,26 @@ class ProfileScreen extends ConsumerWidget {
               ],
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 28),
 
-            // --- Menu List ---
+            // --- Premium Menu List ---
+            Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: Text(
+                'Settings',
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF9CA3AF),
+                  fontFamily: 'Manrope',
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -398,33 +421,34 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              child: Material(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                child: Column(
-                  children: [
-                    _MenuTile(
-                      icon: FontAwesomeIcons.bell,
-                      title: 'Notifications',
-                      subtitle: 'Morning briefing · Reminders',
-                    ),
-                    _MenuTile(
-                      icon: FontAwesomeIcons.shield,
-                      title: 'Privacy & Security',
-                      subtitle: 'Data, permissions',
-                    ),
-                    _MenuTile(
-                      icon: FontAwesomeIcons.download,
-                      title: 'Export Reports',
-                      subtitle: 'PDF, CSV, JSON',
-                    ),
-                    _MenuTile(
-                      icon: FontAwesomeIcons.shareNodes,
-                      title: 'Invite Friends',
-                      subtitle: 'Get 1 month Pro free',
-                    ),
-                  ],
-                ),
+              // 👇 FIX: Yahan saare '_MenuTile' par 'const' hata diya hai
+              child: Column(
+                children: [
+                  _MenuTile(
+                    icon: FontAwesomeIcons.bell,
+                    title: 'Notifications',
+                    subtitle: 'Morning briefing · Reminders',
+                    onTap: () => context.push(AppRoutes.notifications),
+                  ),
+                  _MenuTile(
+                    icon: FontAwesomeIcons.shield,
+                    title: 'Privacy & Security',
+                    subtitle: 'Data, permissions',
+                    onTap: () {},
+                  ),
+                  _MenuTile(
+                    icon: FontAwesomeIcons.download,
+                    title: 'Export Reports',
+                    subtitle: 'PDF, CSV, JSON',
+                    onTap: () {},
+                  ),
+                  _MenuTile(
+                    icon: FontAwesomeIcons.shareNodes,
+                    title: 'Invite Friends',
+                    subtitle: 'Get 1 month Pro free',
+                    onTap: () {},
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
@@ -458,18 +482,20 @@ class _StatItem extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w900,
-            color: const Color(0xFF111827),
+            color: Color(0xFF111827),
+            fontFamily: 'Manrope',
           ),
         ),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: const Color(0xFF6B7280),
+            color: Color(0xFF6B7280),
+            fontFamily: 'Manrope',
           ),
         ),
       ],
@@ -517,10 +543,11 @@ class _AchievementCard extends StatelessWidget {
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF111827),
+              color: Color(0xFF111827),
+              fontFamily: 'Manrope',
             ),
             textAlign: TextAlign.center,
           ),
@@ -528,10 +555,11 @@ class _AchievementCard extends StatelessWidget {
             subtitle,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w600,
-              color: const Color(0xFF6B7280),
+              color: Color(0xFF6B7280),
+              fontFamily: 'Manrope',
             ),
             textAlign: TextAlign.center,
           ),
@@ -551,43 +579,49 @@ class _AchievementCard extends StatelessWidget {
   }
 }
 
+// 👇 FIX: Here is the updated _MenuTile class
 class _MenuTile extends StatelessWidget {
   final FaIconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
 
   const _MenuTile({
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: EdgeInsets.zero,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      onTap: onTap ?? () {},
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: const Color(0xFFF3F4F6),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: FaIcon(icon, color: const Color(0xFF6B7280), size: 20),
+        child: FaIcon(icon, color: const Color(0xFF6B7280), size: 18),
       ),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w800,
-          color: const Color(0xFF111827),
+          color: Color(0xFF111827),
+          fontFamily: 'Manrope',
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: const Color(0xFF9CA3AF),
+          color: Color(0xFF9CA3AF),
+          fontFamily: 'Manrope',
         ),
       ),
       trailing: const FaIcon(
@@ -595,7 +629,6 @@ class _MenuTile extends StatelessWidget {
         color: Color(0xFF9CA3AF),
         size: 16,
       ),
-      onTap: () {},
     );
   }
 }

@@ -1,6 +1,7 @@
 // lib/features/tasks/view/tasks_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:momentum_ai/features/tasks/view/widgets/add_task_bottom_sheet.dart';
 import '../view_model/tasks_view_model.dart';
 import '../model/task_model.dart';
 
@@ -124,6 +125,35 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                           borderRadius: BorderRadius.circular(16),
                           onTap: () {
                             // Add Task button logic
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => AddTaskBottomSheet(
+                                onTaskAdded:
+                                    (
+                                      title,
+                                      deadline,
+                                      priority,
+                                      category,
+                                      estimate,
+                                    ) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Task "$title" added successfully!',
+                                            style: const TextStyle(
+                                              fontFamily: 'Manrope',
+                                            ),
+                                          ),
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                    },
+                              ),
+                            );
                           },
                           child: const Icon(
                             Icons.add_rounded,
