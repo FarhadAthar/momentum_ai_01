@@ -645,7 +645,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 }
 
-// --- Premium Simple Bottom Navigation Item (Fast Animation) ---
+// --- Premium Simple Bottom Navigation Item ---
 class _NavItem extends StatelessWidget {
   final int index;
   final IconData icon;
@@ -673,9 +673,7 @@ class _NavItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Fixed 48x48 container for icon
             AnimatedContainer(
-              // 👇 FAST ANIMATION: Duration 100ms kar diya
               duration: const Duration(milliseconds: 100),
               curve: Curves.easeOutQuart,
               width: 48,
@@ -708,15 +706,13 @@ class _NavItem extends StatelessWidget {
                 size: 24,
               ),
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 1),
             Text(
               label,
-              style: TextStyle(
+              // 👇 FIX: Dono states ke liye FontWeight.w900 (Ultra Bold) kar diya
+              style: const TextStyle(
                 fontSize: 11,
-                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
-                color: isSelected
-                    ? const Color(0xFF6366F1)
-                    : const Color(0xFF6B7280),
+                fontWeight: FontWeight.w900,
                 fontFamily: 'Manrope',
               ),
             ),
