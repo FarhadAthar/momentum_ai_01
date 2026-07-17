@@ -59,7 +59,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     return Scaffold(
       extendBody: true,
-      backgroundColor: const Color(0xFFF3F4F6),
       body: SafeArea(
         bottom: false,
         child: Column(

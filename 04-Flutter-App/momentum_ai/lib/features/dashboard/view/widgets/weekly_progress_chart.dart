@@ -13,8 +13,9 @@ class WeeklyProgressChart extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.all(20),
+      // 👇 FIX: Card background ko Theme aware kar diya
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -32,10 +33,11 @@ class WeeklyProgressChart extends StatelessWidget {
             children: [
               Text(
                 'Weekly Progress',
-                style: const TextStyle(
+                // 👇 FIX: Dynamic heading color
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF111827),
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontFamily: 'Manrope',
                 ),
               ),
@@ -45,19 +47,19 @@ class WeeklyProgressChart extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Text(
                       'Full Report',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF4F46E5),
                         fontFamily: 'Manrope',
                       ),
                     ),
-                    SizedBox(width: 4),
-                    Icon(
+                    const SizedBox(width: 4),
+                    const Icon(
                       Icons.arrow_forward_rounded,
                       size: 16,
                       color: Color(0xFF4F46E5),
@@ -68,7 +70,6 @@ class WeeklyProgressChart extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          // 👇 PERFORMANCE FIX: RepaintBoundary ka istemal kiya
           RepaintBoundary(
             child: SizedBox(
               height: 50,
@@ -98,10 +99,11 @@ class WeeklyProgressChart extends StatelessWidget {
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
                                 days[index],
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w700,
-                                  color: Color(0xFF9CA3AF),
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.6),
                                   fontFamily: 'Manrope',
                                 ),
                               ),

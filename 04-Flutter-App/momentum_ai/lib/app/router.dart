@@ -4,6 +4,7 @@ import 'package:momentum_ai/features/calendar/view/calendar_screen.dart';
 import 'package:momentum_ai/features/habits/view/habit_tracker_screen.dart';
 import 'package:momentum_ai/features/notifications/view/notifications_screen.dart';
 import 'package:momentum_ai/features/profile/view/profile_screen.dart';
+import 'package:momentum_ai/features/settings/view/settings_screen.dart';
 import 'package:momentum_ai/features/subscription/view/subscription_screen.dart';
 
 import '../features/auth/view/login_screen.dart';
@@ -66,6 +67,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: AppRouteNames.habits,
         builder: (context, state) => const HabitTrackerScreen(),
       ),
+      GoRoute(
+        path: AppRoutes.settings,
+        name: AppRouteNames.settings,
+        builder: (context, state) => const SettingsScreen(),
+      ),
     ],
   );
 });
@@ -83,6 +89,7 @@ class AppRoutes {
   static const String calendar = '/calendar';
   static const String notifications = '/notifications';
   static const String habits = '/habits';
+  static const String settings = '/settings';
 }
 
 class AppRouteNames {
@@ -98,4 +105,5 @@ class AppRouteNames {
   static const String calendar = 'calendar';
   static const String notifications = 'notifications';
   static const String habits = 'habits';
+  static const String settings = 'settings';
 }

@@ -14,41 +14,52 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(profileViewModelProvider);
     final xpProgress = state.currentXp / state.maxXp;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: Color(0xFFF3F4F6),
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
+      value: isDark
+          ? const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.light,
+              statusBarBrightness: Brightness.dark,
+              systemNavigationBarColor: Color(0xFF121212), // Dark theme bg
+              systemNavigationBarIconBrightness: Brightness.light,
+            )
+          : const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              statusBarIconBrightness: Brightness.dark,
+              statusBarBrightness: Brightness.light,
+              systemNavigationBarColor: Color(0xFFF3F4F6),
+              systemNavigationBarIconBrightness: Brightness.dark,
+            ),
       child: Scaffold(
         extendBody: true,
-        backgroundColor: const Color(0xFFF3F4F6),
+        // 👇 FIX: Hardcoded background color hata diya taake theme apply ho
         appBar: AppBar(
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.dark,
-          ),
+          systemOverlayStyle: isDark
+              ? const SystemUiOverlayStyle(
+                  statusBarIconBrightness: Brightness.light,
+                )
+              : const SystemUiOverlayStyle(
+                  statusBarIconBrightness: Brightness.dark,
+                ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const FaIcon(
+            icon: FaIcon(
               FontAwesomeIcons.arrowLeft,
               size: 20,
-              color: Color(0xFF111827),
+              color: isDark ? Colors.white : const Color(0xFF111827),
             ),
             onPressed: () => context.pop(),
           ),
           centerTitle: false,
           title: Text(
             'Profile',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF111827),
+              color: isDark ? Colors.white : const Color(0xFF111827),
               fontFamily: 'SpaceGrotesk',
             ),
           ),
@@ -127,16 +138,19 @@ class ProfileScreen extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const FaIcon(
-                          FontAwesomeIcons.gear,
-                          color: Colors.white,
-                          size: 20,
+                      GestureDetector(
+                        onTap: () => context.push(AppRoutes.settings),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const FaIcon(
+                            FontAwesomeIcons.gear,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ),
                       ),
                     ],
@@ -197,7 +211,8 @@ class ProfileScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                // 👇 FIX: Colors.white hata kar Theme.cardColor laga diya
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -220,36 +235,42 @@ class ProfileScreen extends ConsumerWidget {
                     iconColor: const Color(0xFF10B981),
                     value: '${state.tasksDone}',
                     label: 'Tasks Done',
+                    isDark: isDark,
                   ),
                   _StatItem(
                     icon: FontAwesomeIcons.stopwatch,
                     iconColor: const Color(0xFF6366F1),
                     value: state.focusHours,
                     label: 'Focus Hours',
+                    isDark: isDark,
                   ),
                   _StatItem(
                     icon: FontAwesomeIcons.percent,
                     iconColor: const Color(0xFFEF4444),
                     value: state.habits,
                     label: 'Habits',
+                    isDark: isDark,
                   ),
                   _StatItem(
                     icon: FontAwesomeIcons.fire,
                     iconColor: const Color(0xFFF97316),
                     value: '${state.streak}',
                     label: 'Streak',
+                    isDark: isDark,
                   ),
                   _StatItem(
                     icon: FontAwesomeIcons.trophy,
                     iconColor: const Color(0xFFFBBF24),
                     value: '${state.goals}',
                     label: 'Goals',
+                    isDark: isDark,
                   ),
                   _StatItem(
                     icon: FontAwesomeIcons.noteSticky,
                     iconColor: const Color(0xFF4F46E5),
                     value: '${state.notes}',
                     label: 'Notes',
+                    isDark: isDark,
                   ),
                 ],
               ),
@@ -337,10 +358,10 @@ class ProfileScreen extends ConsumerWidget {
             // --- Achievements Section ---
             Text(
               'Achievements',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
-                color: Color(0xFF111827),
+                color: isDark ? Colors.white : const Color(0xFF111827),
                 fontFamily: 'Manrope',
               ),
             ),
@@ -399,10 +420,12 @@ class ProfileScreen extends ConsumerWidget {
               padding: const EdgeInsets.only(left: 4.0),
               child: Text(
                 'Settings',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
-                  color: Color(0xFF9CA3AF),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                   fontFamily: 'Manrope',
                 ),
               ),
@@ -411,7 +434,8 @@ class ProfileScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white,
+                // 👇 FIX: Colors.white hata kar Theme.cardColor laga diya
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -421,7 +445,6 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              // 👇 FIX: Yahan saare '_MenuTile' par 'const' hata diya hai
               child: Column(
                 children: [
                   _MenuTile(
@@ -429,24 +452,28 @@ class ProfileScreen extends ConsumerWidget {
                     title: 'Notifications',
                     subtitle: 'Morning briefing · Reminders',
                     onTap: () => context.push(AppRoutes.notifications),
+                    isDark: isDark,
                   ),
                   _MenuTile(
                     icon: FontAwesomeIcons.shield,
                     title: 'Privacy & Security',
                     subtitle: 'Data, permissions',
                     onTap: () {},
+                    isDark: isDark,
                   ),
                   _MenuTile(
                     icon: FontAwesomeIcons.download,
                     title: 'Export Reports',
                     subtitle: 'PDF, CSV, JSON',
                     onTap: () {},
+                    isDark: isDark,
                   ),
                   _MenuTile(
                     icon: FontAwesomeIcons.shareNodes,
                     title: 'Invite Friends',
                     subtitle: 'Get 1 month Pro free',
                     onTap: () {},
+                    isDark: isDark,
                   ),
                 ],
               ),
@@ -466,12 +493,14 @@ class _StatItem extends StatelessWidget {
   final Color iconColor;
   final String value;
   final String label;
+  final bool isDark;
 
   const _StatItem({
     required this.icon,
     required this.iconColor,
     required this.value,
     required this.label,
+    required this.isDark,
   });
 
   @override
@@ -482,19 +511,21 @@ class _StatItem extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w900,
-            color: Color(0xFF111827),
+            color: isDark ? Colors.white : const Color(0xFF111827),
             fontFamily: 'Manrope',
           ),
         ),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF6B7280),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
             fontFamily: 'Manrope',
           ),
         ),
@@ -518,10 +549,15 @@ class _AchievementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: isUnlocked ? Colors.white : Colors.white.withValues(alpha: 0.6),
+        // 👇 FIX: Dark mode mein cards subtle dark tones le lenge
+        color: isUnlocked
+            ? Theme.of(context).cardColor
+            : Theme.of(context).cardColor.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -543,10 +579,10 @@ class _AchievementCard extends StatelessWidget {
             title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w800,
-              color: Color(0xFF111827),
+              color: isDark ? Colors.white : const Color(0xFF111827),
               fontFamily: 'Manrope',
             ),
             textAlign: TextAlign.center,
@@ -555,10 +591,12 @@ class _AchievementCard extends StatelessWidget {
             subtitle,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 9,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF6B7280),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
               fontFamily: 'Manrope',
             ),
             textAlign: TextAlign.center,
@@ -579,18 +617,19 @@ class _AchievementCard extends StatelessWidget {
   }
 }
 
-// 👇 FIX: Here is the updated _MenuTile class
 class _MenuTile extends StatelessWidget {
   final FaIconData icon;
   final String title;
   final String subtitle;
   final VoidCallback? onTap;
+  final bool isDark;
 
   const _MenuTile({
     required this.icon,
     required this.title,
     required this.subtitle,
     this.onTap,
+    required this.isDark,
   });
 
   @override
@@ -601,26 +640,27 @@ class _MenuTile extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: const Color(0xFFF3F4F6),
+          // 👇 FIX: Hardcoded grey hata kar Theme color use kiya
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: FaIcon(icon, color: const Color(0xFF6B7280), size: 18),
       ),
       title: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w800,
-          color: Color(0xFF111827),
+          color: isDark ? Colors.white : const Color(0xFF111827),
           fontFamily: 'Manrope',
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: Color(0xFF9CA3AF),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           fontFamily: 'Manrope',
         ),
       ),
