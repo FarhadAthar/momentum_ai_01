@@ -13,26 +13,33 @@ class SubscriptionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(subscriptionViewModelProvider);
     final notifier = ref.read(subscriptionViewModelProvider.notifier);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
+      value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light, // Top white icons
+        statusBarIconBrightness:
+            Brightness.light, // Orange header ke liye hamesha white icons
         statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor:
-            Colors.transparent, // Transparent bottom taake gradient show ho
-        systemNavigationBarIconBrightness: Brightness.dark,
+        // 👇 FIX: Dark mode mein bottom navigation bar ko dark set kar diya
+        systemNavigationBarColor: isDark
+            ? const Color(0xFF121212)
+            : const Color(0xFFF3F4F6),
+        systemNavigationBarIconBrightness: isDark
+            ? Brightness.light
+            : Brightness.dark,
       ),
       child: Scaffold(
-        // 👇 Edge-to-edge fix: Body ko bottom gesture bar ke neeche phailane ke liye
         extendBody: true,
-        backgroundColor: const Color(0xFFF3F4F6),
+        // 👇 FIX: Hardcoded white hata kar Theme ka scaffold color use kiya
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        // 👇 FIX: Key add kiya taake IndexedStack force rebuild kare
+        key: const ValueKey('subscription_screen'),
         body: Stack(
           children: [
             // 1. BACKGROUND LAYER (Status bar ke peeche phailne ke liye)
             Positioned.fill(
               child: Container(
-                // 👇 Status bar ki height add kar di taake gradient top tak pohanch jaye
                 padding: EdgeInsets.only(
                   top: MediaQuery.of(context).padding.top,
                 ),
@@ -50,10 +57,9 @@ class SubscriptionScreen extends ConsumerWidget {
               ),
             ),
 
-            // 2. CONTENT LAYER (SafeArea ke andar taake notch se content na takray)
+            // 2. CONTENT LAYER
             SafeArea(
-              bottom:
-                  false, // Bottom bar ke saath merge ho jane ke liye false rakha
+              bottom: false,
               child: ListView(
                 padding: const EdgeInsets.only(bottom: 120),
                 children: [
@@ -76,8 +82,11 @@ class SubscriptionScreen extends ConsumerWidget {
                         const SizedBox(height: 10),
                         Container(
                           padding: const EdgeInsets.all(12),
+                          // 👇 FIX: Dark mode mein star ka background dark orange ho jayega
                           decoration: BoxDecoration(
-                            color: Colors.orange.withValues(alpha: 0.2),
+                            color: isDark
+                                ? const Color(0xFFFF8C00).withValues(alpha: 0.2)
+                                : Colors.orange.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.white.withValues(alpha: 0.4),
@@ -122,8 +131,9 @@ class SubscriptionScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Container(
                         padding: const EdgeInsets.all(20),
+                        // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
@@ -138,8 +148,11 @@ class SubscriptionScreen extends ConsumerWidget {
                             // Toggle Buttons
                             Container(
                               padding: const EdgeInsets.all(4),
+                              // 👇 FIX: Toggle background dark mode mein soft ho jayega
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF3F4F6),
+                                color: Theme.of(
+                                  context,
+                                ).dividerColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(100),
                               ),
                               child: Row(
@@ -157,7 +170,7 @@ class SubscriptionScreen extends ConsumerWidget {
                                         ),
                                         decoration: BoxDecoration(
                                           color: !state.isYearly
-                                              ? Colors.white
+                                              ? Theme.of(context).cardColor
                                               : Colors.transparent,
                                           borderRadius: BorderRadius.circular(
                                             100,
@@ -180,8 +193,19 @@ class SubscriptionScreen extends ConsumerWidget {
                                             style: TextStyle(
                                               fontWeight: FontWeight.w800,
                                               color: !state.isYearly
-                                                  ? const Color(0xFF111827)
-                                                  : const Color(0xFF9CA3AF),
+                                                  ? (isDark
+                                                        ? Colors.white
+                                                        : const Color(
+                                                            0xFF111827,
+                                                          ))
+                                                  : (isDark
+                                                        ? Colors.white
+                                                              .withValues(
+                                                                alpha: 0.4,
+                                                              )
+                                                        : const Color(
+                                                            0xFF9CA3AF,
+                                                          )),
                                             ),
                                           ),
                                         ),
@@ -201,7 +225,7 @@ class SubscriptionScreen extends ConsumerWidget {
                                         ),
                                         decoration: BoxDecoration(
                                           color: state.isYearly
-                                              ? Colors.white
+                                              ? Theme.of(context).cardColor
                                               : Colors.transparent,
                                           borderRadius: BorderRadius.circular(
                                             100,
@@ -227,8 +251,19 @@ class SubscriptionScreen extends ConsumerWidget {
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w800,
                                                 color: state.isYearly
-                                                    ? const Color(0xFF111827)
-                                                    : const Color(0xFF9CA3AF),
+                                                    ? (isDark
+                                                          ? Colors.white
+                                                          : const Color(
+                                                              0xFF111827,
+                                                            ))
+                                                    : (isDark
+                                                          ? Colors.white
+                                                                .withValues(
+                                                                  alpha: 0.4,
+                                                                )
+                                                          : const Color(
+                                                              0xFF9CA3AF,
+                                                            )),
                                               ),
                                             ),
                                             if (!state.isYearly) ...[
@@ -275,18 +310,24 @@ class SubscriptionScreen extends ConsumerWidget {
                                   TextSpan(
                                     text:
                                         '\$${state.displayedPrice.toStringAsFixed(2)}',
+                                    // 👇 FIX: Dynamic price text color
                                     style: TextStyle(
                                       fontSize: 40,
                                       fontWeight: FontWeight.w900,
-                                      color: const Color(0xFF111827),
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF111827),
                                     ),
                                   ),
                                   TextSpan(
                                     text: ' per month',
+                                    // 👇 FIX: Dynamic muted text color
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF6B7280),
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.6)
+                                          : const Color(0xFF6B7280),
                                     ),
                                   ),
                                 ],
@@ -299,7 +340,9 @@ class SubscriptionScreen extends ConsumerWidget {
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w700,
-                                  color: const Color(0xFF9CA3AF),
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.6)
+                                      : const Color(0xFF9CA3AF),
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -325,7 +368,7 @@ class SubscriptionScreen extends ConsumerWidget {
                             ],
                             const SizedBox(height: 20),
 
-                            // Primary Button
+                            // Primary Button (Gradient fixed, no changes needed)
                             SizedBox(
                               width: double.infinity,
                               height: 54,
@@ -376,7 +419,9 @@ class SubscriptionScreen extends ConsumerWidget {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF9CA3AF),
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.5)
+                                    : const Color(0xFF9CA3AF),
                               ),
                             ),
                           ],
@@ -390,8 +435,9 @@ class SubscriptionScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Container(
                       padding: const EdgeInsets.all(20),
+                      // 👇 FIX: Card color theme ke hisaab se
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
@@ -408,7 +454,9 @@ class SubscriptionScreen extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF111827),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF111827),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -430,7 +478,9 @@ class SubscriptionScreen extends ConsumerWidget {
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w700,
-                                        color: const Color(0xFF111827),
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF111827),
                                       ),
                                     ),
                                   ),
@@ -450,8 +500,9 @@ class SubscriptionScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Container(
                       padding: const EdgeInsets.all(16),
+                      // 👇 FIX: Card color theme ke hisaab se
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
@@ -467,26 +518,33 @@ class SubscriptionScreen extends ConsumerWidget {
                           2: FlexColumnWidth(1),
                         },
                         children: [
-                          const TableRow(
+                          TableRow(
                             children: [
                               Padding(
-                                padding: EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.only(bottom: 12),
                                 child: Text(
                                   'FEATURE',
+                                  // 👇 FIX: Dynamic header color
                                   style: TextStyle(
-                                    color: Color(0xFF9CA3AF),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurface
+                                        .withValues(alpha: 0.6),
                                     fontSize: 11,
                                     fontWeight: FontWeight.w800,
                                   ),
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.only(bottom: 12),
                                 child: Center(
                                   child: Text(
                                     'FREE',
                                     style: TextStyle(
-                                      color: Color(0xFF9CA3AF),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.6),
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800,
                                     ),
@@ -494,11 +552,11 @@ class SubscriptionScreen extends ConsumerWidget {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.only(bottom: 12),
                                 child: Center(
                                   child: Text(
                                     'PRO',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       color: Color(0xFF6366F1),
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800,
@@ -520,7 +578,9 @@ class SubscriptionScreen extends ConsumerWidget {
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF111827),
+                                      color: isDark
+                                          ? Colors.white
+                                          : const Color(0xFF111827),
                                     ),
                                   ),
                                 ),
@@ -534,7 +594,11 @@ class SubscriptionScreen extends ConsumerWidget {
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
-                                        color: const Color(0xFF9CA3AF),
+                                        color: isDark
+                                            ? Colors.white.withValues(
+                                                alpha: 0.6,
+                                              )
+                                            : const Color(0xFF9CA3AF),
                                       ),
                                     ),
                                   ),
@@ -546,10 +610,10 @@ class SubscriptionScreen extends ConsumerWidget {
                                   child: Center(
                                     child: Text(
                                       item['pro'] as String,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w700,
-                                        color: const Color(0xFF4F46E5),
+                                        color: Color(0xFF4F46E5),
                                       ),
                                     ),
                                   ),
@@ -599,7 +663,7 @@ class SubscriptionScreen extends ConsumerWidget {
                               const SizedBox(width: 8),
                               Text(
                                 'Teams Plan',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w900,
                                   color: Colors.white,
@@ -610,10 +674,10 @@ class SubscriptionScreen extends ConsumerWidget {
                           const SizedBox(height: 6),
                           Text(
                             'Shared workspace · Task assignment · Team analytics',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white.withValues(alpha: 0.8),
+                              color: Colors.white,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -635,7 +699,7 @@ class SubscriptionScreen extends ConsumerWidget {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  const Text(
                                     'Contact Sales',
                                     style: TextStyle(
                                       fontSize: 14,

@@ -15,40 +15,49 @@ class NotificationsScreen extends ConsumerWidget {
     final notifier = ref.read(notificationViewModelProvider.notifier);
 
     final unreadCount = state.notifications.where((n) => n.isUnread).length;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
+      value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: Color(0xFFF3F4F6),
-        systemNavigationBarIconBrightness: Brightness.dark,
+        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+        systemNavigationBarColor: isDark
+            ? const Color(0xFF121212)
+            : const Color(0xFFF3F4F6),
+        systemNavigationBarIconBrightness: isDark
+            ? Brightness.light
+            : Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF3F4F6),
+        // 👇 FIX: Hardcoded background color hata kar theme ka color use kiya
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        // 👇 FIX: Key add kiya taake IndexedStack theme switch par force rebuild kare
+        key: const ValueKey('notifications_screen'),
         appBar: AppBar(
-          systemOverlayStyle: const SystemUiOverlayStyle(
+          systemOverlayStyle: SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.dark,
+            statusBarIconBrightness: isDark
+                ? Brightness.light
+                : Brightness.dark,
+            statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_rounded,
               size: 20,
-              color: Color(0xFF111827),
+              color: isDark ? Colors.white : const Color(0xFF111827),
             ),
             onPressed: () => context.pop(),
           ),
           title: Text(
             'Notifications',
-            // 👇 GoogleFonts hata kar TextStyle + FontFamily use kiya
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF111827),
+              color: isDark ? Colors.white : const Color(0xFF111827),
               fontFamily: 'SpaceGrotesk',
             ),
           ),
@@ -66,11 +75,12 @@ class NotificationsScreen extends ConsumerWidget {
                   children: [
                     Text(
                       '$unreadCount unread',
-                      // 👇 GoogleFonts hata kar TextStyle + FontFamily use kiya
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF6B7280),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                         fontFamily: 'Manrope',
                       ),
                     ),
@@ -83,11 +93,10 @@ class NotificationsScreen extends ConsumerWidget {
                         ),
                         child: Text(
                           'Mark all read',
-                          // 👇 GoogleFonts hata kar TextStyle + FontFamily use kiya
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF4F46E5),
+                            color: Color(0xFF4F46E5),
                             fontFamily: 'Manrope',
                           ),
                         ),
@@ -105,7 +114,7 @@ class NotificationsScreen extends ConsumerWidget {
                   separatorBuilder: (ctx, index) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final item = state.notifications[index];
-                    return _NotificationCard(item: item);
+                    return _NotificationCard(item: item, isDark: isDark);
                   },
                 ),
               ),
@@ -120,15 +129,17 @@ class NotificationsScreen extends ConsumerWidget {
 // --- Custom Premium Card Widget ---
 class _NotificationCard extends StatelessWidget {
   final NotificationItem item;
+  final bool isDark;
 
-  const _NotificationCard({required this.item});
+  const _NotificationCard({required this.item, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
+      // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -141,15 +152,22 @@ class _NotificationCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Left Icon
+          // 1. Left Icon Container
           Container(
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: item.iconBgColor,
+              // 👇 FIX: Dark mode mein icon background semi-transparent ho jayega
+              color: isDark
+                  ? item.iconBgColor.withValues(alpha: 0.15)
+                  : item.iconBgColor,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(item.icon, color: const Color(0xFF4B5563), size: 20),
+            child: Icon(
+              item.icon,
+              color: isDark ? Colors.white : const Color(0xFF4B5563),
+              size: 20,
+            ),
           ),
           const SizedBox(width: 14),
 
@@ -160,11 +178,11 @@ class _NotificationCard extends StatelessWidget {
               children: [
                 Text(
                   item.title,
-                  // 👇 GoogleFonts hata kar TextStyle + FontFamily use kiya
+                  // 👇 FIX: Dynamic title color
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF111827),
+                    color: isDark ? Colors.white : const Color(0xFF111827),
                     fontFamily: 'Manrope',
                   ),
                 ),
@@ -173,11 +191,13 @@ class _NotificationCard extends StatelessWidget {
                   item.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  // 👇 GoogleFonts hata kar TextStyle + FontFamily use kiya
+                  // 👇 FIX: Dynamic subtitle color
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF6B7280),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                     height: 1.4,
                     fontFamily: 'Manrope',
                   ),
@@ -185,11 +205,13 @@ class _NotificationCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   item.time,
-                  // 👇 GoogleFonts hata kar TextStyle + FontFamily use kiya
+                  // 👇 FIX: Dynamic time color
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: const Color(0xFF9CA3AF),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.5),
                     fontFamily: 'Manrope',
                   ),
                 ),

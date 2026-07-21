@@ -30,7 +30,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   void initState() {
     super.initState();
-
     _setupSystemBars();
 
     _fullNameController = TextEditingController();
@@ -88,17 +87,39 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       return;
     }
 
-    await ref
-        .read(authViewModelProvider.notifier)
-        .signUp(
-          fullName: _fullNameController.text.trim(),
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
+    try {
+      // ViewModel se signUp call karein
+      await ref
+          .read(authViewModelProvider.notifier)
+          .signUp(
+            fullName: _fullNameController.text.trim(),
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    _showSnackBar('Sign up action ready for backend integration');
+      // Success Message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Account created successfully! Please Login.',
+            style: TextStyle(
+              fontFamily: 'Manrope',
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppTheme.textDark,
+        ),
+      );
+
+      // 🔥 IMPORTANT FIX: Dashboard ki jagah Login page par redirect!
+      _goToLogin();
+    } catch (e) {
+      if (!mounted) return;
+      _showSnackBar('Error: $e');
+    }
   }
 
   void _showSnackBar(String message) {
@@ -135,7 +156,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         backgroundColor: const Color(0xFFFFF7EC),
         body: Stack(
           children: [
-            const _PremiumSignupBackground(),
+            const _PremiumSignupBackground(), // 🟢 Ab ye class file mein maujood hai!
             SafeArea(
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -394,64 +415,36 @@ class _SignupGlassCard extends StatelessWidget {
 
   static String? _validateName(String? value) {
     final name = value?.trim() ?? '';
-
-    if (name.isEmpty) {
-      return 'Full name is required';
-    }
-
-    if (name.length < 3) {
-      return 'Enter your full name';
-    }
-
+    if (name.isEmpty) return 'Full name is required';
+    if (name.length < 3) return 'Enter your full name';
     return null;
   }
 
   static String? _validateEmail(String? value) {
     final email = value?.trim() ?? '';
-
-    if (email.isEmpty) {
-      return 'Email is required';
-    }
-
-    if (!email.contains('@') || !email.contains('.')) {
+    if (email.isEmpty) return 'Email is required';
+    if (!email.contains('@') || !email.contains('.'))
       return 'Enter a valid email address';
-    }
-
     return null;
   }
 
   static String? _validatePassword(String? value) {
     final password = value ?? '';
-
-    if (password.isEmpty) {
-      return 'Password is required';
-    }
-
-    if (password.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
-
+    if (password.isEmpty) return 'Password is required';
+    if (password.length < 6) return 'Password must be at least 6 characters';
     return null;
   }
 
   static String? _validateConfirmPassword(String? value, String password) {
     final confirmPassword = value ?? '';
-
-    if (confirmPassword.isEmpty) {
-      return 'Confirm password is required';
-    }
-
-    if (confirmPassword != password) {
-      return 'Passwords do not match';
-    }
-
+    if (confirmPassword.isEmpty) return 'Confirm password is required';
+    if (confirmPassword != password) return 'Passwords do not match';
     return null;
   }
 }
 
 class _FieldLabel extends StatelessWidget {
   final String text;
-
   const _FieldLabel({required this.text});
 
   @override
@@ -766,6 +759,7 @@ class _LoginFooter extends StatelessWidget {
   }
 }
 
+// 🟢 Yahan se yeh classes phir se aa gayi hain (Error isliye aa raha tha kyunke yeh delete ho gayi thin)
 class _PremiumSignupBackground extends StatelessWidget {
   const _PremiumSignupBackground();
 
@@ -895,5 +889,3 @@ class _SignupBackgroundPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
-

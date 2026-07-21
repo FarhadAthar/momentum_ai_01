@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -16,19 +15,14 @@ class ProductivityScoreChart extends StatelessWidget {
     'Goals',
     'Tasks',
   ];
-
   static const Color _primaryColor = Color(0xFF5B5FEF);
-  static const Color _titleColor = Color(0xFF111827);
-  static const Color _labelColor = Color(0xFF8B93A1);
-  static const Color _gridColor = Color(0xFFDDE3EE);
 
   @override
   Widget build(BuildContext context) {
-    final List<double> safeValues = List.generate(_categories.length, (index) {
-      if (index >= values.length) {
-        return 0;
-      }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final List<double> safeValues = List.generate(_categories.length, (index) {
+      if (index >= values.length) return 0;
       return values[index].clamp(0, 5).toDouble();
     }, growable: false);
 
@@ -37,15 +31,18 @@ class ProductivityScoreChart extends StatelessWidget {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 220),
         child: AspectRatio(
-          // Card ko screenshot jaisi compact height deta hai.
           aspectRatio: 0.82,
           child: Container(
             clipBehavior: Clip.antiAlias,
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+            // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: const Color(0xFFE9EDF5), width: 1),
+              border: Border.all(
+                color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
+                width: 1,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.045),
@@ -71,10 +68,11 @@ class ProductivityScoreChart extends StatelessWidget {
                     child: Text(
                       'Productivity Score',
                       maxLines: 1,
+                      // 👇 FIX: Dynamic title color
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: _titleColor,
+                        color: isDark ? Colors.white : const Color(0xFF111827),
                         letterSpacing: -0.3,
                       ),
                     ),
@@ -88,7 +86,6 @@ class ProductivityScoreChart extends StatelessWidget {
                         constraints.maxWidth,
                         constraints.maxHeight,
                       );
-
                       return Center(
                         child: SizedBox.square(
                           dimension: chartSize,
@@ -103,22 +100,22 @@ class ProductivityScoreChart extends StatelessWidget {
                                   radarShape: RadarShape.polygon,
                                   radarBackgroundColor: Colors.transparent,
                                   borderData: FlBorderData(show: false),
-
-                                  // Grid levels.
                                   tickCount: 4,
-
-                                  // 1.0, 2.0, 3.0 values hide ki gayi hain.
+                                  // 👇 Hide inner numbers
                                   ticksTextStyle: const TextStyle(
                                     color: Colors.transparent,
                                     fontSize: 0,
                                   ),
-
                                   tickBorderData: BorderSide(
-                                    color: _gridColor.withValues(alpha: 0.85),
+                                    color: Theme.of(
+                                      context,
+                                    ).dividerColor.withValues(alpha: 0.5),
                                     width: 0.8,
                                   ),
                                   gridBorderData: BorderSide(
-                                    color: _gridColor,
+                                    color: Theme.of(
+                                      context,
+                                    ).dividerColor.withValues(alpha: 0.8),
                                     width: 0.9,
                                   ),
                                   radarBorderData: BorderSide(
@@ -128,29 +125,24 @@ class ProductivityScoreChart extends StatelessWidget {
                                     width: 1,
                                   ),
                                   titlePositionPercentageOffset: 0.16,
+                                  // 👇 FIX: Dynamic label color
                                   titleTextStyle: TextStyle(
                                     fontSize: 7.5,
                                     fontWeight: FontWeight.w600,
-                                    color: _labelColor,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.7)
+                                        : const Color(0xFF8B93A1),
                                     height: 1,
                                   ),
-                                  getTitle: (index, angle) {
-                                    return RadarChartTitle(
-                                      text: _categories[index],
-                                    );
-                                  },
+                                  getTitle: (index, angle) =>
+                                      RadarChartTitle(text: _categories[index]),
                                   dataSets: [
-                                    // Invisible dataset scale ko 0 se 5 rakhta hai.
                                     _buildScaleDataSet(0),
                                     _buildScaleDataSet(5),
-
-                                    // Actual productivity data.
                                     RadarDataSet(
                                       dataEntries: safeValues
-                                          .map(
-                                            (value) => RadarEntry(value: value),
-                                          )
-                                          .toList(growable: false),
+                                          .map((v) => RadarEntry(value: v))
+                                          .toList(),
                                       fillColor: _primaryColor.withValues(
                                         alpha: 0.18,
                                       ),
@@ -165,13 +157,12 @@ class ProductivityScoreChart extends StatelessWidget {
                                 ),
                                 swapAnimationCurve: Curves.easeOutCubic,
                               ),
-
-                              // Premium center dot.
+                              // 👇 FIX: Premium center dot background theme aware
                               Container(
                                 width: 8,
                                 height: 8,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Theme.of(context).cardColor,
                                   shape: BoxShape.circle,
                                   border: Border.all(
                                     color: _primaryColor.withValues(

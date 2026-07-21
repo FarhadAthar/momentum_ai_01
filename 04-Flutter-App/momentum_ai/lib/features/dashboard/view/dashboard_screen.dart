@@ -49,7 +49,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
   }
 
-  // Premium Feature: Dynamic Greeting based on time
   String _getGreeting() {
     final hour = DateTime.now().hour;
     if (hour < 12) return 'Good morning';
@@ -59,12 +58,26 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(dashboardViewModelProvider);
+    final dashboardAsync = ref.watch(dashboardViewModelProvider);
+
+    return dashboardAsync.when(
+      data: (state) => _buildDashboard(state),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (error, _) => Scaffold(body: Center(child: Text('Error: $error'))),
+    );
+  }
+
+  Widget _buildDashboard(DashboardState state) {
     final now = DateTime.now();
     final formattedDate = DateFormat('EEEE, MMMM d · h:mm a').format(now);
 
     final bottomInset = MediaQuery.of(context).padding.bottom;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // 🔥 Sirf pehla naam uthayein
+    final firstName = state.userName.split(' ').first;
 
     return PopScope(
       canPop: _selectedIndex == 0,
@@ -142,17 +155,25 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                         fontFamily: 'SpaceGrotesk',
                                       ),
                                     ),
+                                    // 🔥 FIX: ConstrainedBox use kiya taake text fixed width se zyada na bade, aur emoji saath ho!
                                     Row(
                                       children: [
-                                        Text(
-                                          '${state.userName}!',
-                                          style: TextStyle(
-                                            fontSize: 26,
-                                            fontWeight: FontWeight.w900,
-                                            color: isDark
-                                                ? Colors.white
-                                                : const Color(0xFF111827),
-                                            fontFamily: 'SpaceGrotesk',
+                                        ConstrainedBox(
+                                          constraints: BoxConstraints(
+                                            maxWidth: screenWidth * 0.65,
+                                          ),
+                                          child: Text(
+                                            '$firstName!',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 26,
+                                              fontWeight: FontWeight.w900,
+                                              color: isDark
+                                                  ? Colors.white
+                                                  : const Color(0xFF111827),
+                                              fontFamily: 'SpaceGrotesk',
+                                            ),
                                           ),
                                         ),
                                         const SizedBox(width: 8),
@@ -538,7 +559,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     );
   }
 
-  // --- Helper: Meetings Section ---
   Widget _buildUpcomingMeetingsSection(List<MeetingModel> meetings) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -705,7 +725,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 }
 
-// --- Premium Simple Bottom Navigation Item ---
 class _NavItem extends StatelessWidget {
   final int index;
   final IconData icon;
@@ -724,7 +743,6 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isSelected = selectedIndex == index;
-    // 👇 FIX 1: 'isDark' variable hata diya gaya hai kyunki use nahi ho raha tha.
 
     return InkWell(
       onTap: () => onTap(index),
@@ -763,7 +781,6 @@ class _NavItem extends StatelessWidget {
               ),
               child: Icon(
                 icon,
-                // 👇 FIX 2: .withOpacity ko .withValues(alpha: ...) mein badal diya
                 color: isSelected
                     ? Colors.white
                     : Theme.of(
@@ -775,7 +792,6 @@ class _NavItem extends StatelessWidget {
             const SizedBox(height: 1),
             Text(
               label,
-              // 👇 FIX 2: .withOpacity ko .withValues(alpha: ...) mein badal diya
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w900,

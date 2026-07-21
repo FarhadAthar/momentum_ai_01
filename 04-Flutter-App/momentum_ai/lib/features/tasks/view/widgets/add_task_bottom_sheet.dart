@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class AddTaskBottomSheet extends StatefulWidget {
+import '../../../../core/services/api_service.dart';
+import '../../view_model/tasks_view_model.dart';
+
+class AddTaskBottomSheet extends ConsumerStatefulWidget {
   final Function(
     String title,
     String deadline,
@@ -15,20 +19,20 @@ class AddTaskBottomSheet extends StatefulWidget {
   const AddTaskBottomSheet({super.key, required this.onTaskAdded});
 
   @override
-  State<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
+  ConsumerState<AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
 }
 
-class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
+class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
   final TextEditingController _aiInputController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
 
-  // State variables for premium pickers
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   String? _selectedPriority;
   String? _selectedCategory;
 
   bool _isAIAutoExtracted = false;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -44,13 +48,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     setState(() {
       _isAIAutoExtracted = true;
 
-      // Future Backend Mock
       if (text.toLowerCase().contains('prepare proposal')) {
         _titleController.text = 'Prepare proposal for John';
         _selectedCategory = 'Work';
         _selectedPriority = 'High';
 
-        // Auto set date to Friday (Mock logic)
         final now = DateTime.now();
         final daysUntilFriday = DateTime.friday - now.weekday;
         final nextFriday = now.add(
@@ -59,12 +61,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
           ),
         );
         _selectedDate = nextFriday;
-        _selectedTime = const TimeOfDay(hour: 17, minute: 0); // 5 PM
+        _selectedTime = const TimeOfDay(hour: 17, minute: 0);
       }
     });
   }
 
-  // Premium Date & Time Picker
   Future<void> _pickDateTime() async {
     HapticFeedback.lightImpact();
 
@@ -115,7 +116,6 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     final time = _selectedTime!;
     final timeString = time.format(context);
 
-    // Premium dynamic formatting
     if (DateUtils.isSameDay(date, now)) return 'Today, $timeString';
     if (DateUtils.isSameDay(date, now.add(const Duration(days: 1)))) {
       return 'Tomorrow, $timeString';
@@ -126,13 +126,67 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     ).format(DateTime(date.year, date.month, date.day, time.hour, time.minute));
   }
 
+  Future<void> _submitTask() async {
+    if (_isSubmitting) return;
+
+    HapticFeedback.lightImpact();
+
+    final title = _titleController.text.trim();
+    final deadline = _formatDateTime();
+    final priority = _selectedPriority ?? 'Medium';
+    final category = _selectedCategory ?? 'Work';
+    const estimate = '2 hours';
+
+    if (title.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a task title.')),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final newTaskData = <String, dynamic>{
+        'title': title,
+        'priority': priority,
+        'tags': [category],
+        'time': deadline,
+      };
+
+      await ApiService.createTask(newTaskData);
+
+      // Rebuild the async tasks provider so the newly created API task appears.
+      ref.invalidate(tasksViewModelProvider);
+
+      if (!mounted) return;
+
+      widget.onTaskAdded(title, deadline, priority, category, estimate);
+
+      Navigator.of(context).pop();
+    } catch (error) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to add task: $error')));
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmitting = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.only(top: 20),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      // 👇 FIX: Bottom sheet background color theme aware
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
@@ -152,7 +206,8 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF111827),
+                      color: isDark ? Colors.white : const Color(0xFF111827),
+                      fontFamily: 'SpaceGrotesk',
                     ),
                   ),
                   IconButton(
@@ -171,9 +226,16 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F3FF),
+                  color: isDark
+                      ? const Color(0xFF2D1B4E)
+                      : const Color(0xFFF5F3FF),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFEDE9FE), width: 1),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF3E2A5E)
+                        : const Color(0xFFEDE9FE),
+                    width: 1,
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -192,6 +254,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                             fontSize: 13,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF7C3AED),
+                            fontFamily: 'Manrope',
                           ),
                         ),
                       ],
@@ -203,7 +266,8 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                         fontStyle: FontStyle.italic,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF111827),
+                        color: isDark ? Colors.white : const Color(0xFF111827),
+                        fontFamily: 'Manrope',
                       ),
                       decoration: InputDecoration(
                         hintText: '"Prepare proposal for John by Friday 5pm"',
@@ -211,7 +275,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                           fontStyle: FontStyle.italic,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF9CA3AF),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontFamily: 'Manrope',
                         ),
                         border: InputBorder.none,
                         isDense: true,
@@ -230,11 +297,12 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 'Title',
                 _titleController,
                 isAutoFilled: _isAIAutoExtracted,
+                isDark: isDark,
               ),
 
               const SizedBox(height: 12),
 
-              // --- PREMIUM: Deadline Picker Row ---
+              // --- Deadline Picker Row ---
               GestureDetector(
                 onTap: _pickDateTime,
                 child: _buildPickerRow(
@@ -242,18 +310,19 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   value: _formatDateTime(),
                   icon: Icons.calendar_today_rounded,
                   isAutoFilled: _selectedDate != null,
+                  isDark: isDark,
                 ),
               ),
 
               const SizedBox(height: 12),
 
-              // --- PREMIUM: Priority Selector ---
-              _buildPrioritySelector(),
+              // --- Priority Selector ---
+              _buildPrioritySelector(isDark: isDark),
 
               const SizedBox(height: 12),
 
-              // --- PREMIUM: Category Selector ---
-              _buildCategorySelector(),
+              // --- Category Selector ---
+              _buildCategorySelector(isDark: isDark),
 
               const SizedBox(height: 24),
 
@@ -262,27 +331,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: () {
-                    HapticFeedback.lightImpact();
-                    // Extract values
-                    final title = _titleController.text.trim();
-                    final deadline =
-                        _formatDateTime(); // You can also store raw date
-                    final priority = _selectedPriority ?? 'Medium';
-                    final category = _selectedCategory ?? 'Work';
-                    final estimate =
-                        '2 hours'; // Could add a controller for this
-
-                    // Call the callback
-                    widget.onTaskAdded(
-                      title,
-                      deadline,
-                      priority,
-                      category,
-                      estimate,
-                    );
-                    Navigator.pop(context);
-                  },
+                  onPressed: _isSubmitting ? null : _submitTask,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
@@ -308,25 +357,35 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       ],
                     ),
                     child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Add Task',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Add Task',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                    fontFamily: 'Manrope',
+                                  ),
+                                ),
+                                SizedBox(width: 8),
+                                Icon(
+                                  Icons.check_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          const Icon(
-                            Icons.check_rounded,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ],
-                      ),
                     ),
                   ),
                 ),
@@ -344,11 +403,13 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     String label,
     TextEditingController controller, {
     bool isAutoFilled = false,
+    required bool isDark,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      // 👇 FIX: Input row background theme aware
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: TextFormField(
@@ -356,14 +417,18 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w700,
-          color: const Color(0xFF111827),
+          color: isDark ? Colors.white : const Color(0xFF111827),
+          fontFamily: 'Manrope',
         ),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF9CA3AF),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
+            fontFamily: 'Manrope',
           ),
           suffixIcon: isAutoFilled && controller.text.isNotEmpty
               ? const Icon(
@@ -385,11 +450,13 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     required String value,
     required IconData icon,
     required bool isAutoFilled,
+    required bool isDark,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      // 👇 FIX: Picker row background theme aware
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -397,14 +464,23 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
         children: [
           Row(
             children: [
-              Icon(icon, color: const Color(0xFF9CA3AF), size: 18),
+              Icon(
+                icon,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+                size: 18,
+              ),
               const SizedBox(width: 10),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: const Color(0xFF9CA3AF),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  fontFamily: 'Manrope',
                 ),
               ),
             ],
@@ -417,8 +493,11 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: value == 'Tap to pick'
-                      ? const Color(0xFF9CA3AF)
-                      : const Color(0xFF111827),
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6)
+                      : (isDark ? Colors.white : const Color(0xFF111827)),
+                  fontFamily: 'Manrope',
                 ),
               ),
               if (isAutoFilled && value != 'Tap to pick') ...[
@@ -436,7 +515,7 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     );
   }
 
-  Widget _buildPrioritySelector() {
+  Widget _buildPrioritySelector({required bool isDark}) {
     final priorities = ['High', 'Medium', 'Low'];
     final colors = [
       const Color(0xFFEF4444),
@@ -446,8 +525,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      // 👇 FIX: Priority selector background theme aware
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -460,7 +540,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF9CA3AF),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+                fontFamily: 'Manrope',
               ),
             ),
           ),
@@ -506,7 +589,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       fontWeight: FontWeight.w800,
                       color: isSelected
                           ? colors[index]
-                          : const Color(0xFF6B7280),
+                          : (isDark
+                                ? Colors.white.withValues(alpha: 0.6)
+                                : const Color(0xFF6B7280)),
+                      fontFamily: 'Manrope',
                     ),
                   ),
                 ),
@@ -519,12 +605,13 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
     );
   }
 
-  Widget _buildCategorySelector() {
+  Widget _buildCategorySelector({required bool isDark}) {
     final categories = ['Work', 'Personal', 'Meeting', 'Finance'];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      // 👇 FIX: Category selector background theme aware
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -537,7 +624,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF9CA3AF),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
+                fontFamily: 'Manrope',
               ),
             ),
           ),
@@ -564,7 +654,9 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                     border: Border.all(
                       color: isSelected
                           ? const Color(0xFF7C3AED)
-                          : const Color(0xFFE5E7EB),
+                          : Theme.of(
+                              context,
+                            ).dividerColor.withValues(alpha: 0.5),
                       width: 1.5,
                     ),
                   ),
@@ -575,7 +667,10 @@ class _AddTaskBottomSheetState extends State<AddTaskBottomSheet> {
                       fontWeight: FontWeight.w800,
                       color: isSelected
                           ? const Color(0xFF7C3AED)
-                          : const Color(0xFF6B7280),
+                          : (isDark
+                                ? Colors.white.withValues(alpha: 0.6)
+                                : const Color(0xFF6B7280)),
+                      fontFamily: 'Manrope',
                     ),
                   ),
                 ),

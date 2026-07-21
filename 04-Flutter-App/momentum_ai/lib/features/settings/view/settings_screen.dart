@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../../core/providers/theme_provider.dart';
+import '../../../app/router.dart';
+// 👇 Dashboard ViewModel import karna zaroori hai
+import '../../../features/dashboard/view_model/dashboard_view_model.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -40,7 +45,6 @@ class SettingsScreen extends ConsumerWidget {
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            // 👇 FIX: Back icon auto dark/light color
             icon: Icon(
               Icons.arrow_back_ios_rounded,
               size: 20,
@@ -50,7 +54,6 @@ class SettingsScreen extends ConsumerWidget {
           ),
           title: Text(
             'Settings',
-            // 👇 FIX: Main Heading auto dark/light color
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w800,
@@ -151,7 +154,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              // Account Action
+              // 🔥 FIXED: Logout Action Section
               _SettingsGroup(
                 title: '',
                 children: [
@@ -164,7 +167,22 @@ class SettingsScreen extends ConsumerWidget {
                     subtitleColor: const Color(
                       0xFFEF4444,
                     ).withValues(alpha: 0.6),
-                    onTap: () {},
+                    onTap: () async {
+                      // 1. SharedPreferences se Token aur User Data clear karein
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.remove('token');
+                      await prefs.remove('userId');
+                      await prefs.remove('userName');
+                      await prefs.remove('userEmail');
+
+                      // 🔥 FIX: Logout karte waqt Dashboard ViewModel ko invalidate kar dein!
+                      ref.invalidate(dashboardViewModelProvider);
+
+                      // 2. Login Screen par redirect karein
+                      if (context.mounted) {
+                        context.go(AppRoutes.login);
+                      }
+                    },
                   ),
                 ],
               ),
@@ -187,6 +205,9 @@ class SettingsScreen extends ConsumerWidget {
   }
 }
 
+// ... (Baaki ke widgets (_SettingsGroup, _SettingsTile, _AppearanceBottomSheet) same hain, koi change nahi)
+// Agar aapne code shorten kar diya tha toh wo aise hi rahega, main focus sirf "Logout" aur "invalidate" par raha.
+
 // --- Reusable Group Widget ---
 class _SettingsGroup extends StatelessWidget {
   final String title;
@@ -204,7 +225,6 @@ class _SettingsGroup extends StatelessWidget {
             padding: const EdgeInsets.only(left: 12.0, bottom: 12.0),
             child: Text(
               title,
-              // 👇 FIX: Sub-headings dynamic color (Dark mein soft white, Light mein grey)
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
@@ -283,7 +303,6 @@ class _SettingsTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 👇 FIX: Title auto dark/light color
                   Text(
                     title,
                     style: TextStyle(
@@ -294,7 +313,6 @@ class _SettingsTile extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  // 👇 FIX: Subtitle auto dark/light color
                   Text(
                     subtitle,
                     style: TextStyle(

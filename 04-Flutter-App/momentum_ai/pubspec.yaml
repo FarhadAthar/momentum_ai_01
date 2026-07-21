@@ -40,6 +40,8 @@ dependencies:
   syncfusion_flutter_charts: ^26.1.39
   flutter_riverpod: ^3.3.2
   font_awesome_flutter: ^11.0.0
+  http: ^1.2.0
+  shared_preferences: ^2.2.3
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,3 @@
-// lib/features/habits/view/habit_tracker_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,72 +10,32 @@ class HabitTrackerScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(habitViewModelProvider);
-    final notifier = ref.read(habitViewModelProvider.notifier);
+    final habitsAsync = ref.watch(habitViewModelProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final totalHabits = state.habits.length;
-    final completedToday = state.habits.where((h) => h.isCompletedToday).length;
+    return habitsAsync.when(
+      data: (state) {
+        final notifier = ref.read(habitViewModelProvider.notifier);
 
+        return _buildDataState(context, state, notifier, isDark);
+      },
+      loading: () => _buildLoadingState(context, isDark),
+      error: (error, _) => _buildErrorState(context, ref, error, isDark),
+    );
+  }
+
+  Widget _buildDataState(
+    BuildContext context,
+    HabitsState state,
+    HabitViewModel notifier,
+    bool isDark,
+  ) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: Color(0xFFF3F4F6),
-        systemNavigationBarIconBrightness: Brightness.dark,
-      ),
+      value: _systemUiStyle(isDark),
       child: Scaffold(
-        backgroundColor: const Color(0xFFF3F4F6),
-        appBar: AppBar(
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.dark,
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_rounded,
-              size: 20,
-              color: Color(0xFF111827),
-            ),
-            onPressed: () => context.pop(),
-          ),
-          title: Text(
-            'Habit Tracker',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: Color(0xFF111827),
-              fontFamily: 'SpaceGrotesk',
-            ),
-          ),
-          centerTitle: false,
-          actions: [
-            Container(
-              margin: const EdgeInsets.only(right: 16),
-              width: 44,
-              height: 44,
-              decoration: const BoxDecoration(
-                color: Color(0xFF6366F1),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color(0xFF6366F1),
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.add_rounded,
-                color: Colors.white,
-                size: 28,
-              ),
-            ),
-          ],
-        ),
+        key: const ValueKey('habit_tracker_screen'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: _buildAppBar(context, isDark),
         body: SafeArea(
           bottom: false,
           child: ListView(
@@ -97,9 +56,9 @@ class HabitTrackerScreen extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           'WEEKLY SCORE',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w800,
                             color: Colors.white70,
@@ -172,7 +131,6 @@ class HabitTrackerScreen extends ConsumerWidget {
                           .map((entry) {
                             final int index = entry.key;
                             final String day = entry.value;
-                            // Mock completion status (first 4 days done)
                             final bool isDone = index < 4;
                             return Column(
                               children: [
@@ -209,16 +167,25 @@ class HabitTrackerScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF3E0),
+                  color: isDark
+                      ? const Color(0xFF2D1B0E)
+                      : const Color(0xFFFFF3E0),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFFFE0B2), width: 1),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF4A2E1A)
+                        : const Color(0xFFFFE0B2),
+                    width: 1,
+                  ),
                 ),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF4B5563),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF9CA3AF)
+                            : const Color(0xFF4B5563),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -231,10 +198,12 @@ class HabitTrackerScreen extends ConsumerWidget {
                     Expanded(
                       child: Text(
                         "Amazing! You've maintained your workout streak for 14 days. Just 2 habits left today — you've got this! 💪",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF4E342E),
+                          color: isDark
+                              ? const Color(0xFFFFD54F)
+                              : const Color(0xFF4E342E),
                           fontFamily: 'Manrope',
                           height: 1.4,
                         ),
@@ -250,6 +219,7 @@ class HabitTrackerScreen extends ConsumerWidget {
                 (habit) => _HabitCard(
                   habit: habit,
                   onToggle: () => notifier.toggleHabit(habit.id),
+                  isDark: isDark,
                 ),
               ),
               const SizedBox(height: 20),
@@ -259,14 +229,142 @@ class HabitTrackerScreen extends ConsumerWidget {
       ),
     );
   }
+
+  Widget _buildLoadingState(BuildContext context, bool isDark) {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: _systemUiStyle(isDark),
+      child: Scaffold(
+        key: const ValueKey('habit_tracker_loading'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: _buildAppBar(context, isDark),
+        body: const SafeArea(
+          child: Center(
+            child: CircularProgressIndicator(color: Color(0xFF6366F1)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(
+    BuildContext context,
+    WidgetRef ref,
+    Object error,
+    bool isDark,
+  ) {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: _systemUiStyle(isDark),
+      child: Scaffold(
+        key: const ValueKey('habit_tracker_error'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: _buildAppBar(context, isDark),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 48,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Unable to load habits',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : const Color(0xFF111827),
+                      fontFamily: 'Manrope',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    error.toString(),
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      fontFamily: 'Manrope',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: () {
+                      ref.invalidate(habitViewModelProvider);
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Try again'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(BuildContext context, bool isDark) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      systemOverlayStyle: _systemUiStyle(isDark),
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_back_ios_rounded,
+          size: 20,
+          color: isDark ? Colors.white : const Color(0xFF111827),
+        ),
+        onPressed: () => context.pop(),
+      ),
+      title: Text(
+        'Habit Tracker',
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+          color: isDark ? Colors.white : const Color(0xFF111827),
+          fontFamily: 'SpaceGrotesk',
+        ),
+      ),
+      centerTitle: false,
+    );
+  }
+
+  SystemUiOverlayStyle _systemUiStyle(bool isDark) {
+    return SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+      systemNavigationBarColor: isDark
+          ? const Color(0xFF121212)
+          : const Color(0xFFF3F4F6),
+      systemNavigationBarIconBrightness: isDark
+          ? Brightness.light
+          : Brightness.dark,
+    );
+  }
 }
 
 // --- Custom Habit Card Widget ---
 class _HabitCard extends StatelessWidget {
   final HabitModel habit;
   final VoidCallback onToggle;
+  final bool isDark;
 
-  const _HabitCard({required this.habit, required this.onToggle});
+  const _HabitCard({
+    required this.habit,
+    required this.onToggle,
+    required this.isDark,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -274,7 +372,7 @@ class _HabitCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -294,7 +392,11 @@ class _HabitCard extends StatelessWidget {
               color: habit.iconBgColor,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(habit.icon, color: const Color(0xFF111827), size: 20),
+            child: Icon(
+              habit.icon,
+              color: isDark ? Colors.white : const Color(0xFF111827),
+              size: 20,
+            ),
           ),
           const SizedBox(width: 14),
 
@@ -308,10 +410,10 @@ class _HabitCard extends StatelessWidget {
                   children: [
                     Text(
                       habit.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF111827),
+                        color: isDark ? Colors.white : const Color(0xFF111827),
                         fontFamily: 'Manrope',
                       ),
                     ),
@@ -321,15 +423,19 @@ class _HabitCard extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFEDE9FE),
+                        color: isDark
+                            ? const Color(0xFF1E1233)
+                            : const Color(0xFFEDE9FE),
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: Text(
                         habit.tag,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF6D28D9),
+                          color: isDark
+                              ? const Color(0xFFA78BFA)
+                              : const Color(0xFF6D28D9),
                           fontFamily: 'Manrope',
                         ),
                       ),
@@ -343,7 +449,9 @@ class _HabitCard extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: habit.progress,
                     minHeight: 6,
-                    backgroundColor: const Color(0xFFF3F4F6),
+                    backgroundColor: isDark
+                        ? const Color(0xFF2A2A2A)
+                        : const Color(0xFFF3F4F6),
                     color: habit.progress > 0.6
                         ? const Color(0xFF10B981)
                         : const Color(0xFF6366F1),
@@ -360,20 +468,24 @@ class _HabitCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '${habit.streak} day streak',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF6B7280),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                         fontFamily: 'Manrope',
                       ),
                     ),
                     const Spacer(),
                     Text(
                       '${habit.currentCount}/${habit.targetCount}d',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF9CA3AF),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                         fontFamily: 'Manrope',
                       ),
                     ),
@@ -396,10 +508,14 @@ class _HabitCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: habit.isCompletedToday
                     ? const Color(0xFF10B981)
+                    : isDark
+                    ? Theme.of(context).cardColor
                     : const Color(0xFFF3F4F6),
                 border: Border.all(
                   color: habit.isCompletedToday
                       ? const Color(0xFF10B981)
+                      : isDark
+                      ? Theme.of(context).dividerColor.withValues(alpha: 0.5)
                       : const Color(0xFFD1D5DB),
                   width: 2,
                 ),

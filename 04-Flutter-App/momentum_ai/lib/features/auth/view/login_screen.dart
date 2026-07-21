@@ -26,9 +26,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
-
     _setupSystemBars();
-
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
     _emailFocusNode = FocusNode();
@@ -66,55 +64,45 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
 
-    await ref
-        .read(authViewModelProvider.notifier)
-        .signIn(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
+    try {
+      // ✅ FIX: AuthViewModel ke signIn ko call karein
+      await ref
+          .read(authViewModelProvider.notifier)
+          .signIn(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
 
-    if (!mounted) return;
+      if (!mounted) return;
+      // ViewModel already saved the token, now go to Dashboard
+      context.go(AppRoutes.dashboard);
+    } catch (e) {
+      if (!mounted) return;
+      // ✅ Clean Error Message
+      String errorMsg = e.toString().replaceAll('Exception: ', '');
 
-    context.go(AppRoutes.dashboard);
-    return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            errorMsg,
+            style: const TextStyle(
+              fontFamily: 'Manrope',
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppTheme.textDark,
+        ),
+      );
+    }
   }
 
   Future<void> _handleGoogleLogin() async {
-    FocusScope.of(context).unfocus();
-
     await ref.read(authViewModelProvider.notifier).signInWithGoogle();
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Google sign in placeholder ready',
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppTheme.textDark,
-      ),
-    );
   }
 
   Future<void> _handleAppleLogin() async {
-    FocusScope.of(context).unfocus();
-
-    await ref.read(authViewModelProvider.notifier).signInWithGoogle();
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Apple sign in placeholder ready',
-          style: TextStyle(fontWeight: FontWeight.w700),
-        ),
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppTheme.textDark,
-      ),
-    );
+    await ref.read(authViewModelProvider.notifier).signInWithApple();
   }
 
   void _goToSignup() {
@@ -347,36 +335,23 @@ class _LoginGlassCard extends StatelessWidget {
 
   static String? _validateEmail(String? value) {
     final email = value?.trim() ?? '';
-
-    if (email.isEmpty) {
-      return 'Email is required';
-    }
-
+    if (email.isEmpty) return 'Email is required';
     if (!email.contains('@') || !email.contains('.')) {
       return 'Enter a valid email address';
     }
-
     return null;
   }
 
   static String? _validatePassword(String? value) {
     final password = value ?? '';
-
-    if (password.isEmpty) {
-      return 'Password is required';
-    }
-
-    if (password.length < 6) {
-      return 'Password must be at least 6 characters';
-    }
-
+    if (password.isEmpty) return 'Password is required';
+    if (password.length < 6) return 'Password must be at least 6 characters';
     return null;
   }
 }
 
 class _FieldLabel extends StatelessWidget {
   final String text;
-
   const _FieldLabel({required this.text});
 
   @override
@@ -934,5 +909,3 @@ class _LoginBackgroundPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
-

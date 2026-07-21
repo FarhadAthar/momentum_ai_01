@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:intl/intl.dart';
 import 'package:momentum_ai/features/calendar/model/calendar_state.dart';
 import '../view_model/calendar_view_model.dart';
@@ -13,8 +12,22 @@ class CalendarScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(calendarViewModelProvider);
+    final calendarAsync = ref.watch(calendarViewModelProvider);
+
+    return calendarAsync.when(
+      data: (state) => _buildCalendar(context, ref, state),
+      loading: () => _buildLoadingState(context),
+      error: (error, _) => _buildErrorState(context, ref, error),
+    );
+  }
+
+  Widget _buildCalendar(
+    BuildContext context,
+    WidgetRef ref,
+    CalendarState state,
+  ) {
     final notifier = ref.read(calendarViewModelProvider.notifier);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Generate week days based on selected date
     final weekDays = List.generate(7, (index) {
@@ -24,40 +37,37 @@ class CalendarScreen extends ConsumerWidget {
     final monthYear = DateFormat('MMMM yyyy').format(state.selectedDate);
     final formattedDate = DateFormat('MMMM d').format(state.selectedDate);
 
+    // 👇 FIX: Dynamic Status Bar & Navigation Bar style
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: Color(0xFFF3F4F6),
-        systemNavigationBarIconBrightness: Brightness.dark,
-        systemNavigationBarDividerColor: Colors.transparent,
-      ),
+      value: _systemUiStyle(isDark),
       child: Scaffold(
+        // 👇 FIX: Key add kiya taake IndexedStack theme switch par force rebuild kare
+        key: const ValueKey('calendar_screen'),
         extendBody: true,
-        backgroundColor: const Color(0xFFF3F4F6),
+        // 👇 FIX: Background color Theme aware
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.transparent,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.dark,
-          ),
+          systemOverlayStyle: _systemUiStyle(isDark),
           backgroundColor: Colors.transparent,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.arrow_back_ios_rounded,
               size: 20,
-              color: Color(0xFF111827),
+              color: isDark ? Colors.white : const Color(0xFF111827),
             ),
             onPressed: () => context.pop(),
           ),
           title: Text(
             monthYear,
+            // 👇 FIX: Dynamic title color
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: const Color(0xFF9CA3AF),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
+              fontFamily: 'Manrope',
             ),
           ),
           centerTitle: true,
@@ -73,19 +83,21 @@ class CalendarScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // 👇 FIX: Calendar heading dynamic color
                     Text(
                       'Calendar',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF111827),
+                        color: isDark ? Colors.white : const Color(0xFF111827),
+                        fontFamily: 'SpaceGrotesk',
                       ),
                     ),
                     Row(
                       children: [
-                        _IntegrationChip(label: 'Google'),
+                        _IntegrationChip(label: 'Google', isDark: isDark),
                         const SizedBox(width: 8),
-                        _IntegrationChip(label: 'Outlook'),
+                        _IntegrationChip(label: 'Outlook', isDark: isDark),
                       ],
                     ),
                   ],
@@ -97,8 +109,9 @@ class CalendarScreen extends ConsumerWidget {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
                 padding: const EdgeInsets.symmetric(vertical: 12),
+                // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -153,7 +166,9 @@ class CalendarScreen extends ConsumerWidget {
                                 fontWeight: FontWeight.w700,
                                 color: isSelected
                                     ? Colors.white
-                                    : const Color(0xFF9CA3AF),
+                                    : Theme.of(context).colorScheme.onSurface
+                                          .withValues(alpha: 0.6),
+                                fontFamily: 'Manrope',
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -164,7 +179,10 @@ class CalendarScreen extends ConsumerWidget {
                                 fontWeight: FontWeight.w900,
                                 color: isSelected
                                     ? Colors.white
-                                    : const Color(0xFF111827),
+                                    : (isDark
+                                          ? Colors.white
+                                          : const Color(0xFF111827)),
+                                fontFamily: 'SpaceGrotesk',
                               ),
                             ),
                             if (isSelected) ...[
@@ -204,12 +222,14 @@ class CalendarScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    // 👇 FIX: Dynamic events title color
                     Text(
                       '$formattedDate · Events',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF111827),
+                        color: isDark ? Colors.white : const Color(0xFF111827),
+                        fontFamily: 'Manrope',
                       ),
                     ),
                     Container(
@@ -235,7 +255,7 @@ class CalendarScreen extends ConsumerWidget {
                 child: ListView(
                   padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
                   children: state.events
-                      .map((event) => _EventCard(event: event))
+                      .map((event) => _EventCard(event: event, isDark: isDark))
                       .toList(),
                 ),
               ),
@@ -246,20 +266,28 @@ class CalendarScreen extends ConsumerWidget {
                   padding: const EdgeInsets.only(top: 20),
                   child: Column(
                     children: [
+                      // 👇 FIX: Dynamic empty state text colors
                       Text(
                         'No more events today',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF9CA3AF),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontFamily: 'Manrope',
                         ),
                       ),
+                      const SizedBox(height: 4),
                       Text(
                         'Tap + to add an event',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFFD1D5DB),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.4),
+                          fontFamily: 'Manrope',
                         ),
                       ),
                     ],
@@ -272,20 +300,137 @@ class CalendarScreen extends ConsumerWidget {
       ),
     );
   }
+
+  Widget _buildLoadingState(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: _systemUiStyle(isDark),
+      child: Scaffold(
+        key: const ValueKey('calendar_loading'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: _buildAsyncStateAppBar(context, isDark),
+        body: const SafeArea(child: Center(child: CircularProgressIndicator())),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, WidgetRef ref, Object error) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: _systemUiStyle(isDark),
+      child: Scaffold(
+        key: const ValueKey('calendar_error'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: _buildAsyncStateAppBar(context, isDark),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 48,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Unable to load calendar',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : const Color(0xFF111827),
+                      fontFamily: 'Manrope',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    error.toString(),
+                    textAlign: TextAlign.center,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      fontFamily: 'Manrope',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: () {
+                      ref
+                          .read(calendarViewModelProvider.notifier)
+                          .fetchEvents();
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Try again'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAsyncStateAppBar(
+    BuildContext context,
+    bool isDark,
+  ) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      systemOverlayStyle: _systemUiStyle(isDark),
+      leading: IconButton(
+        icon: Icon(
+          Icons.arrow_back_ios_rounded,
+          size: 20,
+          color: isDark ? Colors.white : const Color(0xFF111827),
+        ),
+        onPressed: () => context.pop(),
+      ),
+    );
+  }
+
+  SystemUiOverlayStyle _systemUiStyle(bool isDark) {
+    return SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+      systemNavigationBarColor: isDark
+          ? const Color(0xFF121212)
+          : const Color(0xFFF3F4F6),
+      systemNavigationBarIconBrightness: isDark
+          ? Brightness.light
+          : Brightness.dark,
+      systemNavigationBarDividerColor: Colors.transparent,
+    );
+  }
 }
 
 // --- Helper Widgets ---
 
 class _IntegrationChip extends StatelessWidget {
   final String label;
-  const _IntegrationChip({required this.label});
+  final bool isDark;
+
+  const _IntegrationChip({required this.label, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      // 👇 FIX: Chip background theme aware
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(100),
         boxShadow: [
           BoxShadow(
@@ -297,10 +442,12 @@ class _IntegrationChip extends StatelessWidget {
       ),
       child: Text(
         label,
+        // 👇 FIX: Chip text theme aware
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w800,
-          color: const Color(0xFF111827),
+          color: isDark ? Colors.white : const Color(0xFF111827),
+          fontFamily: 'Manrope',
         ),
       ),
     );
@@ -309,15 +456,18 @@ class _IntegrationChip extends StatelessWidget {
 
 class _EventCard extends StatelessWidget {
   final EventModel event;
-  const _EventCard({required this.event});
+  final bool isDark;
+
+  const _EventCard({required this.event, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
+      // 👇 FIX: Card background theme aware
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -330,7 +480,7 @@ class _EventCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Colored Stripe
+          // Colored Stripe (kept as is)
           Container(
             width: 4,
             height: 45,
@@ -345,12 +495,14 @@ class _EventCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 👇 FIX: Event title dynamic color
                 Text(
                   event.title,
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
-                    color: const Color(0xFF111827),
+                    color: isDark ? Colors.white : const Color(0xFF111827),
+                    fontFamily: 'Manrope',
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -362,12 +514,16 @@ class _EventCard extends StatelessWidget {
                       color: Color(0xFF9CA3AF),
                     ),
                     const SizedBox(width: 4),
+                    // 👇 FIX: Event details dynamic color
                     Text(
                       '${event.time} · ${event.duration}',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF9CA3AF),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontFamily: 'Manrope',
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -377,12 +533,16 @@ class _EventCard extends StatelessWidget {
                       color: Color(0xFF9CA3AF),
                     ),
                     const SizedBox(width: 4),
+                    // 👇 FIX: Event attendees dynamic color
                     Text(
                       '${event.attendees}',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF9CA3AF),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontFamily: 'Manrope',
                       ),
                     ),
                   ],
@@ -390,7 +550,7 @@ class _EventCard extends StatelessWidget {
               ],
             ),
           ),
-          // Play Icon Action
+          // Play Icon Action (kept as is)
           const Icon(
             Icons.play_circle_outline_rounded,
             size: 24,

@@ -12,7 +12,6 @@ class TasksScreen extends ConsumerStatefulWidget {
   ConsumerState<TasksScreen> createState() => _TasksScreenState();
 }
 
-// 👇 FIX: SingleTickerProviderStateMixin ko TickerProviderStateMixin mein change kiya
 class _TasksScreenState extends ConsumerState<TasksScreen>
     with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   String _selectedFilter = 'All';
@@ -28,7 +27,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
     super.initState();
     _itemControllers = List.generate(5, (index) {
       return AnimationController(
-        vsync: this, // Ab error nahi aayega
+        vsync: this,
         duration: Duration(milliseconds: 600 + (index * 100)),
       );
     });
@@ -58,40 +57,48 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
-    final tasks = ref.watch(tasksViewModelProvider);
-    final filteredTasks = tasks.where((task) {
-      if (_selectedFilter == 'All') return true;
-      if (_selectedFilter == 'Today') return task.time.contains('Today');
-      if (_selectedFilter == 'High') return task.priority == 'High';
-      if (_selectedFilter == 'Work') return task.tags.contains('Work');
-      if (_selectedFilter == 'Done') return task.isCompleted == true;
-      return true;
-    }).toList();
+    final tasksAsync = ref.watch(tasksViewModelProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       extendBody: true,
-      backgroundColor: const Color(0xFFF3F4F6),
+      key: const ValueKey('tasks_screen'),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         bottom: false,
-        child: Stack(
-          children: [
-            SingleChildScrollView(
+        child: tasksAsync.when(
+          data: (tasks) {
+            // Filter logic
+            final filteredTasks = tasks.where((task) {
+              if (_selectedFilter == 'All') return true;
+              if (_selectedFilter == 'Today') {
+                return task.time.contains('Today');
+              }
+              if (_selectedFilter == 'High') return task.priority == 'High';
+              if (_selectedFilter == 'Work') return task.tags.contains('Work');
+              if (_selectedFilter == 'Done') return task.isCompleted == true;
+              return true;
+            }).toList();
+
+            return SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // --- Header ---
                   Row(
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '2 of 8 completed',
+                            '${tasks.where((t) => t.isCompleted).length} of ${tasks.length} completed',
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF9CA3AF),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                           Text(
@@ -99,7 +106,10 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF111827),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF111827),
+                              fontFamily: 'SpaceGrotesk',
                             ),
                           ),
                         ],
@@ -124,7 +134,6 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                         child: InkWell(
                           borderRadius: BorderRadius.circular(16),
                           onTap: () {
-                            // Add Task button logic
                             showModalBottomSheet(
                               context: context,
                               isScrollControlled: true,
@@ -132,27 +141,13 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                               builder: (context) => AddTaskBottomSheet(
                                 onTaskAdded:
                                     (
-                                      title,
-                                      deadline,
-                                      priority,
-                                      category,
-                                      estimate,
-                                    ) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Task "$title" added successfully!',
-                                            style: const TextStyle(
-                                              fontFamily: 'Manrope',
-                                            ),
-                                          ),
-                                          behavior: SnackBarBehavior.floating,
-                                        ),
-                                      );
-                                    },
-                              ),
+                                      String title,
+                                      String deadline,
+                                      String priority,
+                                      String category,
+                                      String estimate,
+                                    ) {},
+                              ), // We'll update the sheet to use ViewModel
                             );
                           },
                           child: const Icon(
@@ -165,13 +160,18 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                     ],
                   ),
                   const SizedBox(height: 20),
+                  // --- AI Task Creator Card ---
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF5F3FF),
+                      color: isDark
+                          ? const Color(0xFF2D1B4E)
+                          : const Color(0xFFF5F3FF),
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(
-                        color: const Color(0xFFEDE9FE),
+                        color: isDark
+                            ? const Color(0xFF3E2A5E)
+                            : const Color(0xFFEDE9FE),
                         width: 1,
                       ),
                     ),
@@ -199,7 +199,10 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF111827),
+                                  color: isDark
+                                      ? Colors.white
+                                      : const Color(0xFF111827),
+                                  fontFamily: 'Manrope',
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -208,7 +211,9 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: const Color(0xFF6B7280),
+                                  color: Theme.of(context).colorScheme.onSurface
+                                      .withValues(alpha: 0.6),
+                                  fontFamily: 'Manrope',
                                 ),
                               ),
                             ],
@@ -221,13 +226,14 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                     ),
                   ),
                   const SizedBox(height: 20),
+                  // --- Search Bar ---
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
@@ -248,7 +254,10 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                         hintStyle: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF9CA3AF),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontFamily: 'Manrope',
                         ),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
@@ -259,7 +268,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                   ),
                   const SizedBox(height: 20),
 
-                  // 👇 FIXED FILTER CHIPS (GestureDetector ki jagah InkWell use kiya)
+                  // --- Filter Chips ---
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -281,7 +290,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? const Color(0xFF6366F1)
-                                    : Colors.white,
+                                    : Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(100),
                                 boxShadow: isSelected
                                     ? [
@@ -310,7 +319,9 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                                   fontWeight: FontWeight.w800,
                                   color: isSelected
                                       ? Colors.white
-                                      : const Color(0xFF6B7280),
+                                      : Theme.of(context).colorScheme.onSurface
+                                            .withValues(alpha: 0.6),
+                                  fontFamily: 'Manrope',
                                 ),
                                 child: Text(filter),
                               ),
@@ -322,6 +333,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                   ),
                   const SizedBox(height: 20),
 
+                  // --- Task List ---
                   if (filteredTasks.isEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 40),
@@ -329,8 +341,11 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                         child: Text(
                           'No tasks found',
                           style: TextStyle(
-                            color: const Color(0xFF9CA3AF),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
                             fontWeight: FontWeight.w700,
+                            fontFamily: 'Manrope',
                           ),
                         ),
                       ),
@@ -357,6 +372,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                             ).animate(animation),
                             child: _TaskCard(
                               task: task,
+                              // 👇 ViewModel ko call karein
                               onToggle: () => ref
                                   .read(tasksViewModelProvider.notifier)
                                   .toggleTaskCompletion(task.id),
@@ -368,16 +384,64 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                   const SizedBox(height: 20),
                 ],
               ),
-            ),
-          ],
+            );
+          },
+          loading: () {
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xFF6366F1)),
+            );
+          },
+          error: (error, stackTrace) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline_rounded,
+                    color: Color(0xFFEF4444),
+                    size: 48,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error loading tasks',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: isDark ? Colors.white : const Color(0xFF111827),
+                      fontFamily: 'Manrope',
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    error.toString(),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      fontFamily: 'Manrope',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  FilledButton.icon(
+                    onPressed: () {
+                      ref.invalidate(tasksViewModelProvider); // Retry
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Try again'),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-// --- Sub-Widgets ---
-
+// --- Helper Widgets (Same as before) ---
 class _AIActionButton extends StatelessWidget {
   final IconData icon;
   const _AIActionButton({required this.icon});
@@ -388,9 +452,9 @@ class _AIActionButton extends StatelessWidget {
       width: 40,
       height: 40,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.8),
+        color: Theme.of(context).cardColor.withValues(alpha: 0.8),
         shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
       ),
       child: Icon(icon, color: const Color(0xFF6D28D9), size: 18),
     );
@@ -427,13 +491,18 @@ class _TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withValues(alpha: 0.3),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -454,8 +523,6 @@ class _TaskCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 14),
-
-          // Checkbox toggle
           GestureDetector(
             onTap: onToggle,
             child: AnimatedContainer(
@@ -469,7 +536,7 @@ class _TaskCard extends StatelessWidget {
                 border: Border.all(
                   color: task.isCompleted
                       ? task.accentColor
-                      : const Color(0xFFD1D5DB),
+                      : Theme.of(context).dividerColor,
                   width: 2,
                 ),
               ),
@@ -485,7 +552,6 @@ class _TaskCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 14),
-
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,6 +575,7 @@ class _TaskCard extends StatelessWidget {
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
                               color: _getTagTextColor(tag),
+                              fontFamily: 'Manrope',
                             ),
                           ),
                         ),
@@ -522,11 +589,14 @@ class _TaskCard extends StatelessWidget {
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                     color: task.isCompleted
-                        ? const Color(0xFF9CA3AF)
-                        : const Color(0xFF111827),
+                        ? Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.4)
+                        : (isDark ? Colors.white : const Color(0xFF111827)),
                     decoration: task.isCompleted
                         ? TextDecoration.lineThrough
                         : TextDecoration.none,
+                    fontFamily: 'Manrope',
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -543,7 +613,10 @@ class _TaskCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF9CA3AF),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontFamily: 'Manrope',
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -572,6 +645,7 @@ class _TaskCard extends StatelessWidget {
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
                                 color: const Color(0xFF9333EA),
+                                fontFamily: 'Manrope',
                               ),
                             ),
                           ],

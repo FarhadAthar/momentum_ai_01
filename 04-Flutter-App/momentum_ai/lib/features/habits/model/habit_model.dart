@@ -1,4 +1,3 @@
-// lib/features/habits/model/habit_model.dart
 import 'package:flutter/material.dart';
 
 class HabitModel {
@@ -6,7 +5,7 @@ class HabitModel {
   final String title;
   final IconData icon;
   final Color iconBgColor;
-  final String tag; // e.g., 'Health', 'Learning', 'Wellness'
+  final String tag;
   final int currentCount;
   final int targetCount;
   final int streak;
@@ -38,5 +37,25 @@ class HabitModel {
       streak: streak,
       isCompletedToday: isCompletedToday ?? this.isCompletedToday,
     );
+  }
+
+  // 👇 BACKEND API SE DATA AANE PAR MAP KARNE KE LIYE
+  factory HabitModel.fromJson(Map<String, dynamic> json) {
+    return HabitModel(
+      id: json['id'],
+      title: json['title'],
+      icon: _getIconData(json['icon']),
+      iconBgColor: Color(json['iconBgColor'] ?? 0xFFFFF3E0),
+      tag: json['tag'],
+      currentCount: json['currentCount'] ?? 0,
+      targetCount: json['targetCount'] ?? 30,
+      streak: json['streak'] ?? 0,
+      isCompletedToday: json['isCompletedToday'] ?? false,
+    );
+  }
+
+  static IconData _getIconData(String? iconName) {
+    // Icon mapping logic can be added here. For now, use a default.
+    return Icons.fitness_center_rounded;
   }
 }

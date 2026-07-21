@@ -93,3 +93,4 @@ secrets/
 private/
 *.pem
 *.key
+/lib/generated/prisma

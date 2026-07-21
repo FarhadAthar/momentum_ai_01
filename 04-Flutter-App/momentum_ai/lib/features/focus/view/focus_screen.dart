@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:momentum_ai/features/focus/view/widgets/focus_settings_sheet.dart';
 
 // 👇 YE IMPORT LINE SAB SE ZAROORI HAI
 import '../view_model/focus_view_model.dart';
@@ -37,6 +38,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
   Widget build(BuildContext context) {
     final state = ref.watch(focusViewModelProvider);
     final notifier = ref.read(focusViewModelProvider.notifier);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final duration = Duration(seconds: state.remainingSeconds);
     final formattedTime = DateFormat('mm:ss').format(DateTime(0).add(duration));
@@ -44,9 +46,17 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
     final totalSessions = state.totalSessions;
     final completedSessions = state.completedSessions;
 
+    // 👇 Timer ke peeche ka background dynamic banaya
+    final timerBgColor = isDark
+        ? const Color(0xFF2A2A2A)
+        : const Color(0xFFF3F4F6);
+
     return Scaffold(
+      // 👇 FIX: Key add kar diya taake IndexedStack force rebuild kare
+      key: const ValueKey('focus_screen'),
       extendBody: true,
-      backgroundColor: const Color(0xFFF3F4F6),
+      // 👇 FIX: Background color ko Theme aware kar diya
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
@@ -67,7 +77,10 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: const Color(0xFF9CA3AF),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontFamily: 'Manrope',
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -76,7 +89,10 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
-                          color: const Color(0xFF111827),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF111827),
+                          fontFamily: 'SpaceGrotesk',
                         ),
                       ),
                     ],
@@ -84,8 +100,9 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                   Container(
                     width: 42,
                     height: 42,
+                    // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
@@ -95,10 +112,17 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.settings_outlined,
-                      color: Color(0xFF6B7280),
-                      size: 22,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(21),
+                      onTap: () =>
+                          showFocusSettingsSheet(context), // 👈 Function call
+                      child: Icon(
+                        Icons.settings_outlined,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        size: 22,
+                      ),
                     ),
                   ),
                 ],
@@ -112,10 +136,18 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                   horizontal: 16,
                   vertical: 12,
                 ),
+                // 👇 FIX: Dark mode mein card color dark purple
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F3FF),
+                  color: isDark
+                      ? const Color(0xFF2D1B4E)
+                      : const Color(0xFFF5F3FF),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFEDE9FE), width: 1),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF3E2A5E)
+                        : const Color(0xFFEDE9FE),
+                    width: 1,
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -137,7 +169,10 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: const Color(0xFF9CA3AF),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                              fontFamily: 'Manrope',
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -146,15 +181,20 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF111827),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF111827),
+                              fontFamily: 'Manrope',
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.keyboard_arrow_down_rounded,
-                      color: Color(0xFF9CA3AF),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ],
                 ),
@@ -172,7 +212,11 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                     children: [
                       CustomPaint(
                         size: const Size(220, 220),
-                        painter: TimerPainter(progress: state.progress),
+                        // 👇 FIX: Dynamic bgColor pass kiya
+                        painter: TimerPainter(
+                          progress: state.progress,
+                          bgColor: timerBgColor,
+                        ),
                       ),
                       Column(
                         mainAxisSize: MainAxisSize.min,
@@ -182,8 +226,11 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                             style: TextStyle(
                               fontSize: 48,
                               fontWeight: FontWeight.w900,
-                              color: const Color(0xFF111827),
+                              color: isDark
+                                  ? Colors.white
+                                  : const Color(0xFF111827),
                               height: 1.0,
+                              fontFamily: 'SpaceGrotesk',
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -192,16 +239,20 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF9CA3AF),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                              fontFamily: 'Manrope',
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             '${(state.progress * 100).toStringAsFixed(0)}% complete',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w700,
-                              color: const Color(0xFF6366F1),
+                              color: Color(0xFF6366F1),
+                              fontFamily: 'Manrope',
                             ),
                           ),
                         ],
@@ -298,7 +349,9 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                             ? const Color(0xFF8B5CF6)
                             : (isCurrent
                                   ? const Color(0xFF8B5CF6)
-                                  : const Color(0xFFE5E7EB)),
+                                  : Theme.of(
+                                      context,
+                                    ).dividerColor.withValues(alpha: 0.5)),
                         borderRadius: BorderRadius.circular(100),
                         boxShadow: isCurrent
                             ? [
@@ -322,8 +375,9 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
               // --- Background Sounds Card ---
               Container(
                 padding: const EdgeInsets.all(16),
+                // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -349,7 +403,10 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF111827),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF111827),
+                            fontFamily: 'Manrope',
                           ),
                         ),
                         const Spacer(),
@@ -382,12 +439,16 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                                 decoration: BoxDecoration(
                                   color: isSelected
                                       ? const Color(0xFF6366F1)
-                                      : const Color(0xFFF3F4F6),
+                                      : Theme.of(
+                                          context,
+                                        ).dividerColor.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(100),
                                   border: Border.all(
                                     color: isSelected
                                         ? Colors.transparent
-                                        : const Color(0xFFE5E7EB),
+                                        : Theme.of(
+                                            context,
+                                          ).dividerColor.withValues(alpha: 0.5),
                                   ),
                                   boxShadow: isSelected
                                       ? [
@@ -407,7 +468,11 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                                     fontWeight: FontWeight.w800,
                                     color: isSelected
                                         ? Colors.white
-                                        : const Color(0xFF6B7280),
+                                        : Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withValues(alpha: 0.6),
+                                    fontFamily: 'Manrope',
                                   ),
                                 ),
                               ),
@@ -424,8 +489,9 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
               // --- Focus Queue Card ---
               Container(
                 padding: const EdgeInsets.all(16),
+                // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -443,7 +509,8 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF111827),
+                        color: isDark ? Colors.white : const Color(0xFF111827),
+                        fontFamily: 'Manrope',
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -472,7 +539,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                                       ? const Color(0xFF10B981)
                                       : (isCurrent
                                             ? const Color(0xFF6366F1)
-                                            : const Color(0xFFD1D5DB)),
+                                            : Theme.of(context).dividerColor),
                                   width: 2,
                                 ),
                               ),
@@ -494,11 +561,15 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                                       ? FontWeight.w800
                                       : FontWeight.w600,
                                   color: isCompleted
-                                      ? const Color(0xFF9CA3AF)
-                                      : const Color(0xFF111827),
+                                      ? Theme.of(context).colorScheme.onSurface
+                                            .withValues(alpha: 0.6)
+                                      : (isDark
+                                            ? Colors.white
+                                            : const Color(0xFF111827)),
                                   decoration: isCompleted
                                       ? TextDecoration.lineThrough
                                       : TextDecoration.none,
+                                  fontFamily: 'Manrope',
                                 ),
                               ),
                             ),
@@ -521,6 +592,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                       iconColor: const Color(0xFFEF4444),
                       value: '$completedSessions',
                       label: 'Sessions',
+                      isDark: isDark,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -530,6 +602,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                       iconColor: const Color(0xFF6366F1),
                       value: '52m',
                       label: 'Focus Time',
+                      isDark: isDark,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -539,6 +612,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen>
                       iconColor: const Color(0xFFF59E0B),
                       value: '1.8h',
                       label: 'Deep Work',
+                      isDark: isDark,
                     ),
                   ),
                 ],
@@ -567,8 +641,9 @@ class _NeumorphicButton extends StatelessWidget {
       child: Container(
         width: 52,
         height: 52,
+        // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -577,13 +652,17 @@ class _NeumorphicButton extends StatelessWidget {
               offset: const Offset(0, 6),
             ),
             BoxShadow(
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Theme.of(context).cardColor.withValues(alpha: 0.8),
               blurRadius: 6,
               offset: const Offset(-4, -4),
             ),
           ],
         ),
-        child: Icon(icon, color: const Color(0xFF4B5563), size: 22),
+        child: Icon(
+          icon,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+          size: 22,
+        ),
       ),
     );
   }
@@ -594,20 +673,23 @@ class _StatCard extends StatelessWidget {
   final Color iconColor;
   final String value;
   final String label;
+  final bool isDark;
 
   const _StatCard({
     required this.icon,
     required this.iconColor,
     required this.value,
     required this.label,
+    required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+      // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -626,7 +708,8 @@ class _StatCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w900,
-              color: const Color(0xFF111827),
+              color: isDark ? Colors.white : const Color(0xFF111827),
+              fontFamily: 'SpaceGrotesk',
             ),
           ),
           const SizedBox(height: 2),
@@ -635,7 +718,10 @@ class _StatCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: const Color(0xFF9CA3AF),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
+              fontFamily: 'Manrope',
             ),
           ),
         ],
@@ -644,10 +730,11 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-// --- Custom Painter for Circular Timer (Fix applied) ---
+// --- Custom Painter for Circular Timer ---
 class TimerPainter extends CustomPainter {
   final double progress;
-  TimerPainter({required this.progress}); // 👈 Fix applied here
+  final Color bgColor; // 👈 New property added
+  TimerPainter({required this.progress, required this.bgColor});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -655,7 +742,8 @@ class TimerPainter extends CustomPainter {
     final radius = (size.width - 24) / 2;
 
     final backgroundPaint = Paint()
-      ..color = const Color(0xFFF3F4F6)
+      ..color =
+          bgColor // 👈 Use dynamic bgColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 14
       ..strokeCap = StrokeCap.round;
@@ -682,5 +770,5 @@ class TimerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(TimerPainter oldDelegate) =>
-      oldDelegate.progress != progress;
+      oldDelegate.progress != progress || oldDelegate.bgColor != bgColor;
 }

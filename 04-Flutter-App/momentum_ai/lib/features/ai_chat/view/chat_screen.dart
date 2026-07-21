@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:momentum_ai/features/ai_chat/view/widgets/ai_chat_settings_sheet.dart';
 
 import '../view_model/chat_view_model.dart';
 import '../model/chat_model.dart';
@@ -46,6 +47,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(chatViewModelProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
@@ -58,7 +60,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
 
     return Scaffold(
+      // 👇 FIX: Key add kiya taake IndexedStack force rebuild kare
+      key: const ValueKey('chat_screen'),
       extendBody: true,
+      // 👇 FIX: Background color ko Theme aware kar diya
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -97,10 +103,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       children: [
                         Text(
                           'AI Assistant',
+                          // 👇 FIX: Dynamic text color
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
-                            color: const Color(0xFF111827),
+                            color: isDark
+                                ? Colors.white
+                                : const Color(0xFF111827),
+                            fontFamily: 'SpaceGrotesk',
                           ),
                         ),
                         Row(
@@ -114,12 +124,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               ),
                             ),
                             const SizedBox(width: 6),
-                            Text(
+                            const Text(
                               'Online • GPT-4o powered',
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF10B981),
+                                color: Color(0xFF10B981),
+                                fontFamily: 'Manrope',
                               ),
                             ),
                           ],
@@ -130,8 +141,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   Container(
                     width: 40,
                     height: 40,
+                    // 👇 FIX: Settings icon background theme aware
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
@@ -141,10 +153,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.settings_outlined,
-                      color: Color(0xFF6B7280),
-                      size: 20,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () =>
+                          showAiChatSettingsSheet(context), // 👈 Function call
+                      child: Icon(
+                        Icons.settings_outlined,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        size: 20,
+                      ),
                     ),
                   ),
                 ],
@@ -156,7 +175,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               child: ListView.builder(
                 controller: _scrollController,
                 reverse: true,
-                // 👇 FIX: BOTTOM PADDING 140px kar diya hai
                 padding: const EdgeInsets.only(
                   left: 20,
                   right: 20,
@@ -180,7 +198,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   final message = state.messages[reversedIndex];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16.0),
-                    child: _ChatBubble(message: message),
+                    child: _ChatBubble(message: message, isDark: isDark),
                   );
                 },
               ),
@@ -189,8 +207,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             // --- Input Field ---
             Container(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              // 👇 FIX: Input field background theme aware
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Theme.of(context).cardColor,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.04),
@@ -201,9 +220,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.mic_rounded,
-                    color: Color(0xFF9CA3AF),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                     size: 24,
                   ),
                   const SizedBox(width: 12),
@@ -213,7 +234,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF111827),
+                        color: isDark ? Colors.white : const Color(0xFF111827),
+                        fontFamily: 'Manrope',
                       ),
                       textInputAction: TextInputAction.send,
                       onSubmitted: (_) => _handleSend(),
@@ -222,7 +244,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         hintStyle: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF9CA3AF),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          fontFamily: 'Manrope',
                         ),
                         border: InputBorder.none,
                         isDense: true,
@@ -263,7 +288,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 ],
               ),
             ),
-            // 👇 FIX: YE LINE ADD KI HAI. Is se input field aur nav bar ke beech me 80px ka gap aayega
             const SizedBox(height: 80),
           ],
         ),
@@ -275,8 +299,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 // --- Chat Bubble Widget ---
 class _ChatBubble extends StatelessWidget {
   final ChatMessage message;
+  final bool isDark;
 
-  const _ChatBubble({required this.message});
+  const _ChatBubble({required this.message, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -309,8 +334,9 @@ class _ChatBubble extends StatelessWidget {
                   maxWidth: MediaQuery.of(context).size.width * 0.75,
                 ),
                 padding: const EdgeInsets.all(16),
+                // 👇 FIX: AI bubble background theme aware
                 decoration: BoxDecoration(
-                  color: message.isUser ? null : Colors.white,
+                  color: message.isUser ? null : Theme.of(context).cardColor,
                   gradient: message.isUser
                       ? const LinearGradient(
                           colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
@@ -337,13 +363,15 @@ class _ChatBubble extends StatelessWidget {
                 ),
                 child: Text(
                   message.text,
+                  // 👇 FIX: AI bubble text color dynamic
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     height: 1.5,
                     color: message.isUser
                         ? Colors.white
-                        : const Color(0xFF111827),
+                        : (isDark ? Colors.white : const Color(0xFF111827)),
+                    fontFamily: 'Manrope',
                   ),
                 ),
               ),
@@ -384,6 +412,8 @@ class _TypingIndicatorState extends State<_TypingIndicator>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.only(left: 40, top: 8, bottom: 8),
       child: Row(
@@ -402,10 +432,11 @@ class _TypingIndicatorState extends State<_TypingIndicator>
                 width: 8,
                 height: 8,
                 margin: const EdgeInsets.symmetric(horizontal: 3),
+                // 👇 FIX: Typing indicator dots color theme aware
                 decoration: BoxDecoration(
-                  color: const Color(
-                    0xFF9CA3AF,
-                  ).withValues(alpha: animation.value * 0.6),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(
+                    alpha: animation.value * 0.6,
+                  ),
                   shape: BoxShape.circle,
                 ),
               );

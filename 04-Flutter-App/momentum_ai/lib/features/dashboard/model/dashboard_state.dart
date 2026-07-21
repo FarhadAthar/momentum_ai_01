@@ -1,4 +1,3 @@
-// Dashboard ka State Model
 class DashboardState {
   final String userName;
   final int notificationCount;
@@ -12,75 +11,60 @@ class DashboardState {
   final List<MeetingModel> meetings;
   final List<TaskPriorityModel> priorities;
 
-  const DashboardState({
-    this.userName = 'Ahmed',
-    this.notificationCount = 6,
-    this.dailyFocusScore = 87,
-    this.weeklyFocusIncrease = 12,
-    this.tasksCompleted = 14,
-    this.totalTasks = 18,
-    this.focusHours = '5.2h',
-    this.streak = 12,
-    this.xp = 340,
+  DashboardState({
+    required this.userName,
+    required this.notificationCount,
+    required this.dailyFocusScore,
+    required this.weeklyFocusIncrease,
+    required this.tasksCompleted,
+    required this.totalTasks,
+    required this.focusHours,
+    required this.streak,
+    required this.xp,
     this.meetings = const [],
     this.priorities = const [],
   });
-
-  DashboardState copyWith({
-    String? userName,
-    int? notificationCount,
-    int? dailyFocusScore,
-    int? weeklyFocusIncrease,
-    int? tasksCompleted,
-    int? totalTasks,
-    String? focusHours,
-    int? streak,
-    int? xp,
-    List<MeetingModel>? meetings,
-    List<TaskPriorityModel>? priorities,
-  }) {
-    return DashboardState(
-      userName: userName ?? this.userName,
-      notificationCount: notificationCount ?? this.notificationCount,
-      dailyFocusScore: dailyFocusScore ?? this.dailyFocusScore,
-      weeklyFocusIncrease: weeklyFocusIncrease ?? this.weeklyFocusIncrease,
-      tasksCompleted: tasksCompleted ?? this.tasksCompleted,
-      totalTasks: totalTasks ?? this.totalTasks,
-      focusHours: focusHours ?? this.focusHours,
-      streak: streak ?? this.streak,
-      xp: xp ?? this.xp,
-      meetings: meetings ?? this.meetings,
-      priorities: priorities ?? this.priorities,
-    );
-  }
 }
 
 class MeetingModel {
   final String title;
   final String time;
   final int peopleCount;
-  final String? subtitle;
 
-  const MeetingModel({
+  MeetingModel({
     required this.title,
     required this.time,
     required this.peopleCount,
-    this.subtitle,
   });
+
+  factory MeetingModel.fromJson(Map<String, dynamic> json) {
+    return MeetingModel(
+      title: json['title'],
+      time: json['time'],
+      peopleCount: json['peopleCount'],
+    );
+  }
 }
 
 class TaskPriorityModel {
   final String title;
   final String timeEstimate;
-  final String type; // 'urgent', 'work', 'finance', 'meeting'
+  final String type;
   final List<String> tags;
 
-  const TaskPriorityModel({
+  TaskPriorityModel({
     required this.title,
     required this.timeEstimate,
     required this.type,
     this.tags = const [],
   });
+
+  factory TaskPriorityModel.fromJson(Map<String, dynamic> json) {
+    return TaskPriorityModel(
+      title: json['title'],
+      timeEstimate: json['timeEstimate'],
+      type: json['type'],
+      tags: List<String>.from(json['tags'] ?? []),
+    );
+  }
 }
-
-

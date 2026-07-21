@@ -8,10 +8,13 @@ class WeeklyFocusChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(20),
+      // 👇 FIX: Hardcoded white hata kar Theme.cardColor laga diya
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -26,10 +29,12 @@ class WeeklyFocusChart extends StatelessWidget {
         children: [
           Text(
             'Focus Hours This Week',
+            // 👇 FIX: Dynamic title color
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
-              color: const Color(0xFF111827),
+              color: isDark ? Colors.white : const Color(0xFF111827),
+              fontFamily: 'Manrope',
             ),
           ),
           const SizedBox(height: 16),
@@ -70,10 +75,14 @@ class WeeklyFocusChart extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 10.0),
                             child: Text(
                               days[index],
+                              // 👇 FIX: Dynamic labels color
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF9CA3AF),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.6),
+                                fontFamily: 'Manrope',
                               ),
                             ),
                           );
@@ -105,7 +114,9 @@ class WeeklyFocusChart extends StatelessWidget {
                       getDotPainter: (spot, percent, barData, index) {
                         return FlDotCirclePainter(
                           radius: 5,
-                          color: Colors.white,
+                          color: Theme.of(
+                            context,
+                          ).cardColor, // 👈 FIX: Dots theme aware
                           strokeWidth: 2,
                           strokeColor: const Color(0xFF6366F1),
                         );
