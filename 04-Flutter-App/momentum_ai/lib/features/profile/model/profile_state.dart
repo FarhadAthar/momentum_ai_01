@@ -13,8 +13,8 @@ class ProfileState {
   final int notes;
 
   const ProfileState({
-    this.name = 'Ahmed Khan',
-    this.role = 'Entrepreneur · Pro Member',
+    this.name = 'User',
+    this.role = 'Member', // Default 'Member' set kiya
     this.level = 14,
     this.currentXp = 3240,
     this.maxXp = 4000,
@@ -26,11 +26,18 @@ class ProfileState {
     this.notes = 124,
   });
 
-  // 👇 BACKEND API SE DATA AANE PAR MAP KARNE KE LIYE
+  // 🔥 FIX: Role ko Capitalize karne ka function
+  static String _formatRole(String role) {
+    if (role.isEmpty) return 'Member';
+    return role[0].toUpperCase() + role.substring(1);
+  }
+
   factory ProfileState.fromJson(Map<String, dynamic> json) {
     return ProfileState(
-      name: json['name'] ?? 'Ahmed Khan',
-      role: json['role'] ?? 'Entrepreneur · Pro Member',
+      name: json['name'] ?? 'User',
+      role: _formatRole(
+        json['role'] ?? 'Member',
+      ), // 🔥 Ab 'user' -> 'User', 'admin' -> 'Admin' ban jayega
       level: json['level'] ?? 14,
       currentXp: json['currentXp'] ?? 3240,
       maxXp: json['maxXp'] ?? 4000,

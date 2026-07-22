@@ -423,8 +423,9 @@ class _SignupGlassCard extends StatelessWidget {
   static String? _validateEmail(String? value) {
     final email = value?.trim() ?? '';
     if (email.isEmpty) return 'Email is required';
-    if (!email.contains('@') || !email.contains('.'))
+    if (!email.contains('@') || !email.contains('.')) {
       return 'Enter a valid email address';
+    }
     return null;
   }
 

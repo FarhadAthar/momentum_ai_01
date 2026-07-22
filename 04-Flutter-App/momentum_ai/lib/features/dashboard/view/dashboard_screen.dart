@@ -74,10 +74,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     final bottomInset = MediaQuery.of(context).padding.bottom;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screenWidth = MediaQuery.of(context).size.width;
 
     // 🔥 Sirf pehla naam uthayein
     final firstName = state.userName.split(' ').first;
+    // 🔥 Agar naam 10 characters se zyada ho, toh truncate kar dein
+    final displayName = firstName.length > 10
+        ? '${firstName.substring(0, 10)}...'
+        : firstName;
 
     return PopScope(
       canPop: _selectedIndex == 0,
@@ -155,24 +158,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                         fontFamily: 'SpaceGrotesk',
                                       ),
                                     ),
-                                    // 🔥 FIX: ConstrainedBox use kiya taake text fixed width se zyada na bade, aur emoji saath ho!
+                                    // 🔥 FINAL FIX: FittedBox + Flexible use kiya taake emoji saath rahe, aur text overflow na kare!
                                     Row(
                                       children: [
-                                        ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            maxWidth: screenWidth * 0.65,
-                                          ),
-                                          child: Text(
-                                            '$firstName!',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize: 26,
-                                              fontWeight: FontWeight.w900,
-                                              color: isDark
-                                                  ? Colors.white
-                                                  : const Color(0xFF111827),
-                                              fontFamily: 'SpaceGrotesk',
+                                        Flexible(
+                                          child: FittedBox(
+                                            fit: BoxFit.scaleDown,
+                                            child: Text(
+                                              '$displayName!',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                fontSize: 26,
+                                                fontWeight: FontWeight.w900,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : const Color(0xFF111827),
+                                                fontFamily: 'SpaceGrotesk',
+                                              ),
                                             ),
                                           ),
                                         ),

@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // 👇 Physical phone + adb reverse ke liye 'localhost' use karein
-  static const String baseUrl = 'http://192.168.110.33:5000';
+  static const String baseUrl = 'http://192.168.20.34:5000';
 
   static Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();

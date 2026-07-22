@@ -62,10 +62,12 @@ class ProfileScreen extends ConsumerWidget {
             ),
           ),
         ),
-        // 👇 PRODUCTION-GRADE ASYNC HANDLING
         body: profileAsync.when(
           data: (profile) {
             final xpProgress = profile.currentXp / profile.maxXp;
+            final displayName = profile.name.length > 18
+                ? '${profile.name.substring(0, 18)}...'
+                : profile.name;
 
             return ListView(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
@@ -103,7 +105,9 @@ class ProfileScreen extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  profile.name,
+                                  displayName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.w900,
@@ -112,7 +116,8 @@ class ProfileScreen extends ConsumerWidget {
                                   ),
                                 ),
                                 Text(
-                                  profile.role,
+                                  profile
+                                      .role, // 🔥 Ab yahan Capitalized role aayega
                                   style: const TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
@@ -535,8 +540,8 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-// --- Helper Widgets (Same as before, unchanged) ---
-
+// --- Helper Widgets ---
+// (Sare helper widgets (_StatItem, _AchievementCard, _MenuTile) same hain, koi change nahi)
 class _StatItem extends StatelessWidget {
   final FaIconData icon;
   final Color iconColor;
