@@ -21,24 +21,33 @@ class TaskModel {
     required this.accentColor,
   });
 
-  // 👇 Backend JSON se model banane ke liye
   factory TaskModel.fromJson(Map<String, dynamic> json) {
+    Color parseColor(dynamic colorData) {
+      if (colorData is int) {
+        return Color(colorData);
+      } else if (colorData is String) {
+        final hex = colorData.replaceAll('#', '');
+        if (hex.length == 6) {
+          return Color(int.parse('0xFF$hex'));
+        } else if (hex.length == 8) {
+          return Color(int.parse('0x$hex'));
+        }
+      }
+      return const Color(0xFF6366F1);
+    }
+
     return TaskModel(
-      id: json['id'],
-      title: json['title'],
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
       isCompleted: json['isCompleted'] ?? false,
       priority: json['priority'] ?? 'Medium',
       tags: List<String>.from(json['tags'] ?? []),
       time: json['time'] ?? '',
       isAIGenerated: json['isAIGenerated'] ?? false,
-      // Color ko int se parse karna (agar backend se aata hai)
-      accentColor: json['accentColor'] != null
-          ? Color(json['accentColor'])
-          : const Color(0xFF6366F1),
+      accentColor: parseColor(json['accentColor']),
     );
   }
 
-  // 👇 Model ko Backend JSON mein convert karne ke liye
   Map<String, dynamic> toJson() {
     return {
       'title': title,

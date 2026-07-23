@@ -14,48 +14,74 @@ class TasksViewModel extends Notifier<AsyncValue<List<TaskModel>>> {
     return const AsyncValue.loading();
   }
 
-  // 🔥 1. Real Backend se Tasks fetch karna
-  Future<void> fetchTasks() async {
-    state = const AsyncValue.loading();
-    try {
-      final rawList = await ApiService.getTasks(); // Real API call
-      final tasks = rawList.map((e) => TaskModel.fromJson(e)).toList();
-      state = AsyncValue.data(tasks);
-    } catch (e) {
-      state = AsyncValue.error(e, StackTrace.current);
-    }
+  // 1. Fetch - Smart Loading
+  Future<void> fetchTasks({bool setLoading = true}) async {
+    if (setLoading) state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final rawList = await ApiService.getTasks();
+      return rawList.map((e) => TaskModel.fromJson(e)).toList();
+    });
   }
 
-  // 🔥 2. Real Backend par Naya Task add karna
+  // 2. Add Task
   Future<void> addTask(TaskModel task) async {
     try {
-      // Backend API call
       final createdResponse = await ApiService.createTask(task.toJson());
-
-      // Backend se naya task (with real ID) parse karein
       final newTask = TaskModel.fromJson(createdResponse['task']);
-
-      // Optimistic Update UI mein daal dein
       final currentList = state.value ?? [];
       state = AsyncValue.data([...currentList, newTask]);
     } catch (e) {
-      // Error par wapas server se fetch karein (sync rakhne ke liye)
-      fetchTasks();
-      rethrow; // Bottom sheet ko error dikhane ke liye
+      await fetchTasks(setLoading: false);
+      rethrow;
     }
   }
 
-  // 🔥 3. Real Backend par Task Complete/Uncomplete karna
+  // 3. Toggle (Production Smoothness)
   Future<void> toggleTaskCompletion(String taskId) async {
-    try {
-      // Real Backend API call
-      await ApiService.toggleTask(taskId);
+    // 1. Optimistic Update (User ko instantly response dikhega)
+    final currentList = state.value ?? [];
+    final updatedList = currentList.map((task) {
+      if (task.id == taskId) {
+        return TaskModel(
+          id: task.id,
+          title: task.title,
+          isCompleted: !task.isCompleted,
+          priority: task.priority,
+          tags: task.tags,
+          time: task.time,
+          isAIGenerated: task.isAIGenerated,
+          accentColor: task.accentColor,
+        );
+      }
+      return task;
+    }).toList();
+    state = AsyncValue.data(updatedList);
 
-      // Backend se confirm karne ke baad hi UI update karein (Isse data corrupt nahi hoga)
-      fetchTasks();
+    // 2. Background Sync (Silently API ko update karein)
+    try {
+      await ApiService.toggleTask(taskId);
+      // UI ko rokne ke liye `setLoading: false` use kiya
+      await fetchTasks(setLoading: false);
     } catch (e) {
-      // Error par wapas fetch karein
-      fetchTasks();
+      // Error par wapas rollback karne ke liye fetch karein
+      await fetchTasks(setLoading: false);
+      rethrow;
+    }
+  }
+
+  // 🆕 4. Delete Task
+  Future<void> deleteTask(String taskId) async {
+    try {
+      // Backend call
+      await ApiService.deleteTask(taskId);
+      // UI update: list se hata dein
+      final currentList = state.value ?? [];
+      state = AsyncValue.data(
+        currentList.where((t) => t.id != taskId).toList(),
+      );
+    } catch (e) {
+      await fetchTasks(setLoading: false);
+      rethrow;
     }
   }
 }

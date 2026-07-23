@@ -4,8 +4,6 @@ const cors = require("cors");
 const { PrismaClient } = require("@prisma/client");
 const authRoutes = require("./routes/authRoutes");
 const { protect } = require("./middlewares/authMiddleware");
-// 🔥 Crypto import add kiya (Unique ID generate karne ke liye)
-const crypto = require("crypto");
 
 dotenv.config();
 
@@ -15,7 +13,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database Connection check
 async function main() {
   try {
     await prisma.$connect();
@@ -27,19 +24,23 @@ async function main() {
 }
 main();
 
-// --- Auth Routes ---
+// --- Routes ---
 app.use("/api/auth", authRoutes);
 
-// --- DYNAMIC ROUTES ---
-app.get("/api/dashboard", protect, (req, res) => {
+app.get("/api/dashboard", protect, async (req, res) => {
   if (!req.user) return res.status(401).json({ message: "Unauthorized user" });
+
+  const tasks = await prisma.task.findMany({ where: { userId: req.user.id } });
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((t) => t.isCompleted).length;
+
   res.status(200).json({
     userName: req.user.name,
     notificationCount: 2,
     dailyFocusScore: 82,
     weeklyFocusIncrease: 6,
-    tasksCompleted: 4,
-    totalTasks: 8,
+    tasksCompleted: completedTasks,
+    totalTasks: totalTasks,
     focusHours: "3.5h",
     streak: 12,
     xp: 350,
@@ -65,48 +66,55 @@ app.get("/api/dashboard", protect, (req, res) => {
 });
 
 // ==========================================
-// 🔥 TASKS ROUTES (Real ID generation)
+// 🔥 TASKS API
 // ==========================================
-
-app.get("/api/tasks", protect, (req, res) => {
-  res.status(200).json({
-    tasks: [
-      {
-        id: "1",
-        title: "Prepare client proposal",
-        isCompleted: false,
-        priority: "High",
-        tags: ["Work"],
-        time: "Today 5 PM",
-        isAIGenerated: true,
-        accentColor: "#6366F1",
-      },
-    ],
+app.get("/api/tasks", protect, async (req, res) => {
+  const tasks = await prisma.task.findMany({
+    where: { userId: req.user.id },
+    orderBy: { createdAt: "desc" },
   });
+  res.status(200).json({ tasks });
 });
 
-// 🔥 POST /api/tasks - Naya task banayein (with Real ID)
-app.post("/api/tasks", protect, (req, res) => {
-  const newTask = req.body;
-  // Realistic ID generate karein
-  const id = crypto.randomBytes(4).toString("hex");
-  const taskWithId = { id, ...newTask };
-
-  res.status(201).json({
-    message: "Task created",
-    task: taskWithId,
+app.post("/api/tasks", protect, async (req, res) => {
+  const { title, priority, tags, time, isAIGenerated, accentColor } = req.body;
+  const newTask = await prisma.task.create({
+    data: {
+      title,
+      priority,
+      tags,
+      time,
+      isAIGenerated,
+      accentColor,
+      userId: req.user.id,
+    },
   });
+  res.status(201).json({ message: "Task created", task: newTask });
 });
 
-// 🔥 PUT /api/tasks/:id/toggle
-app.put("/api/tasks/:id/toggle", protect, (req, res) => {
-  res.status(200).json({ message: "Task toggled successfully" });
+app.put("/api/tasks/:id/toggle", protect, async (req, res) => {
+  const { id } = req.params;
+  const task = await prisma.task.findUnique({
+    where: { id, userId: req.user.id },
+  });
+  if (!task) return res.status(404).json({ message: "Task not found" });
+
+  const updatedTask = await prisma.task.update({
+    where: { id },
+    data: { isCompleted: !task.isCompleted },
+  });
+  res.status(200).json({ message: "Toggled", task: updatedTask });
+});
+
+app.delete("/api/tasks/:id", protect, async (req, res) => {
+  const { id } = req.params;
+  await prisma.task.delete({ where: { id, userId: req.user.id } });
+  res.status(200).json({ message: "Task deleted successfully" });
 });
 
 // ==========================================
 // OTHER ROUTES
 // ==========================================
-
 app.get("/api/habits", protect, (req, res) => {
   res.status(200).json({
     habits: [
@@ -150,8 +158,7 @@ app.get("/api/profile", protect, (req, res) => {
   });
 });
 
-// 404 JSON Handler
-app.use((req, res, next) => {
+app.use((req, res) => {
   res
     .status(404)
     .json({ message: "Endpoint not found. Please check the URL." });

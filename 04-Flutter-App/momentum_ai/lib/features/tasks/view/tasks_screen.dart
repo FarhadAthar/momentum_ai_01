@@ -334,6 +334,9 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                   const SizedBox(height: 20),
 
                   // --- Task List ---
+                  // ... (Upar sab kuch same hai) ...
+
+                  // --- Task List ---
                   if (filteredTasks.isEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 40),
@@ -363,6 +366,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                             _itemAnimations[originalIndex %
                                 _itemAnimations.length];
 
+                        // 🔥 PRODUCTION POLISH: Dismissible (Swipe to Delete) add kiya
                         return FadeTransition(
                           opacity: animation,
                           child: SlideTransition(
@@ -370,16 +374,39 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                               begin: const Offset(0, 0.4),
                               end: Offset.zero,
                             ).animate(animation),
-                            child: _TaskCard(
-                              task: task,
-                              onToggle: () => ref
-                                  .read(tasksViewModelProvider.notifier)
-                                  .toggleTaskCompletion(task.id),
+                            child: Dismissible(
+                              key: ValueKey(task.id),
+                              direction: DismissDirection
+                                  .endToStart, // Right to left swipe
+                              background: Container(
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.only(right: 20),
+                                color: const Color(0xFFEF4444),
+                                child: const Icon(
+                                  Icons.delete_outline_rounded,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                              ),
+                              onDismissed: (direction) {
+                                // ViewModel ka deleteTask call karein
+                                ref
+                                    .read(tasksViewModelProvider.notifier)
+                                    .deleteTask(task.id);
+                              },
+                              child: _TaskCard(
+                                task: task,
+                                onToggle: () => ref
+                                    .read(tasksViewModelProvider.notifier)
+                                    .toggleTaskCompletion(task.id),
+                              ),
                             ),
                           ),
                         );
                       }).toList(),
                     ),
+                  const SizedBox(height: 20),
+                  // ... (Neeche baaki same hai) ...
                   const SizedBox(height: 20),
                 ],
               ),

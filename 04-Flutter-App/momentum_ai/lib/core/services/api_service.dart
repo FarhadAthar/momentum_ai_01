@@ -126,6 +126,10 @@ class ApiService {
     return put('/api/tasks/$taskId/toggle');
   }
 
+  static Future<Map<String, dynamic>> deleteTask(String taskId) async {
+    return delete('/api/tasks/$taskId');
+  }
+
   static Future<Map<String, dynamic>> getHabits() async {
     return get('/api/habits');
   }
