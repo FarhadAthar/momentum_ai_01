@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:momentum_ai/features/tasks/model/task_model.dart';
 
-import '../../../../core/services/api_service.dart';
 import '../../view_model/tasks_view_model.dart';
 
 class AddTaskBottomSheet extends ConsumerStatefulWidget {
@@ -147,17 +147,25 @@ class _AddTaskBottomSheetState extends ConsumerState<AddTaskBottomSheet> {
     setState(() => _isSubmitting = true);
 
     try {
-      final newTaskData = <String, dynamic>{
-        'title': title,
-        'priority': priority,
-        'tags': [category],
-        'time': deadline,
-      };
+      // 🔥 FIX: Direct ApiService call hata kar ViewModel ka addTask use kiya
+      final newTask = TaskModel(
+        id: '', // Backend generate karega, humein id dene ki zaroorat nahi
+        title: title,
+        isCompleted: false,
+        priority: priority,
+        tags: [category],
+        time: deadline,
+        isAIGenerated: false,
+        // Priority ke hisaab se color decide karein
+        accentColor: priority == 'High'
+            ? const Color(0xFFEF4444)
+            : priority == 'Medium'
+            ? const Color(0xFFF59E0B)
+            : const Color(0xFF10B981),
+      );
 
-      await ApiService.createTask(newTaskData);
-
-      // Rebuild the async tasks provider so the newly created API task appears.
-      ref.invalidate(tasksViewModelProvider);
+      // ViewModel ke through task add karein
+      await ref.read(tasksViewModelProvider.notifier).addTask(newTask);
 
       if (!mounted) return;
 

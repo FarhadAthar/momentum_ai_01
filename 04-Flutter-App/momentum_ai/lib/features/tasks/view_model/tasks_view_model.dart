@@ -1,7 +1,6 @@
-import 'dart:ui';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../model/task_model.dart';
+import '../../../core/services/api_service.dart';
 
 final tasksViewModelProvider =
     NotifierProvider<TasksViewModel, AsyncValue<List<TaskModel>>>(() {
@@ -11,100 +10,52 @@ final tasksViewModelProvider =
 class TasksViewModel extends Notifier<AsyncValue<List<TaskModel>>> {
   @override
   AsyncValue<List<TaskModel>> build() {
-    fetchTasks(); // API call shuru karein
+    fetchTasks();
     return const AsyncValue.loading();
   }
 
-  // 1. API se Tasks fetch karna
+  // 🔥 1. Real Backend se Tasks fetch karna
   Future<void> fetchTasks() async {
     state = const AsyncValue.loading();
     try {
-      // TODO: Actual Backend API ka connection
-      // final rawList = await ApiService.getTasks();
-      // final tasks = rawList.map((e) => TaskModel.fromJson(e)).toList();
-
-      // Mock data for testing (Kyunke backend abhi tasks routes ready nahi)
-      await Future.delayed(const Duration(milliseconds: 600));
-      final tasks = [
-        TaskModel(
-          id: '1',
-          title: 'Prepare client proposal',
-          isCompleted: false,
-          priority: 'High',
-          tags: ['Work'],
-          time: 'Today 5 PM',
-          isAIGenerated: true,
-          accentColor: const Color(0xFF6366F1),
-        ),
-        TaskModel(
-          id: '2',
-          title: 'Review Q3 report',
-          isCompleted: true,
-          priority: 'Medium',
-          tags: ['Finance'],
-          time: 'Tomorrow',
-          isAIGenerated: false,
-          accentColor: const Color(0xFFD97706),
-        ),
-        TaskModel(
-          id: '3',
-          title: 'Team standup',
-          isCompleted: false,
-          priority: 'Low',
-          tags: ['Meeting'],
-          time: 'Today 10 AM',
-          isAIGenerated: false,
-          accentColor: const Color(0xFF14B8A6),
-        ),
-      ];
+      final rawList = await ApiService.getTasks(); // Real API call
+      final tasks = rawList.map((e) => TaskModel.fromJson(e)).toList();
       state = AsyncValue.data(tasks);
     } catch (e) {
       state = AsyncValue.error(e, StackTrace.current);
     }
   }
 
-  // 2. Naya Task add karna
+  // 🔥 2. Real Backend par Naya Task add karna
   Future<void> addTask(TaskModel task) async {
     try {
       // Backend API call
-      // final created = await ApiService.createTask(task.toJson());
-      // final newTask = TaskModel.fromJson(created);
+      final createdResponse = await ApiService.createTask(task.toJson());
 
-      // Optimistic Update (Mock)
+      // Backend se naya task (with real ID) parse karein
+      final newTask = TaskModel.fromJson(createdResponse['task']);
+
+      // Optimistic Update UI mein daal dein
       final currentList = state.value ?? [];
-      state = AsyncValue.data([...currentList, task]);
+      state = AsyncValue.data([...currentList, newTask]);
     } catch (e) {
-      // Error par wapas fetch karein
+      // Error par wapas server se fetch karein (sync rakhne ke liye)
       fetchTasks();
+      rethrow; // Bottom sheet ko error dikhane ke liye
     }
   }
 
-  // 3. Task Complete/Uncomplete karna
+  // 🔥 3. Real Backend par Task Complete/Uncomplete karna
   Future<void> toggleTaskCompletion(String taskId) async {
     try {
-      // Backend API call
-      // await ApiService.toggleTask(taskId);
+      // Real Backend API call
+      await ApiService.toggleTask(taskId);
 
-      // Local Optimistic Update (Mock)
-      final currentList = state.value ?? [];
-      final updatedList = currentList.map((task) {
-        if (task.id == taskId) {
-          return TaskModel(
-            id: task.id,
-            title: task.title,
-            isCompleted: !task.isCompleted,
-            priority: task.priority,
-            tags: task.tags,
-            time: task.time,
-            isAIGenerated: task.isAIGenerated,
-            accentColor: task.accentColor,
-          );
-        }
-        return task;
-      }).toList();
-      state = AsyncValue.data(updatedList);
+      // Backend se confirm karne ke baad hi UI update karein (Isse data corrupt nahi hoga)
+      fetchTasks();
     } catch (e) {
-      fetchTasks(); // Refresh on error
+      // Error par wapas fetch karein
+      fetchTasks();
     }
   }
 }

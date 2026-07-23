@@ -4,6 +4,8 @@ const cors = require("cors");
 const { PrismaClient } = require("@prisma/client");
 const authRoutes = require("./routes/authRoutes");
 const { protect } = require("./middlewares/authMiddleware");
+// 🔥 Crypto import add kiya (Unique ID generate karne ke liye)
+const crypto = require("crypto");
 
 dotenv.config();
 
@@ -62,6 +64,10 @@ app.get("/api/dashboard", protect, (req, res) => {
   });
 });
 
+// ==========================================
+// 🔥 TASKS ROUTES (Real ID generation)
+// ==========================================
+
 app.get("/api/tasks", protect, (req, res) => {
   res.status(200).json({
     tasks: [
@@ -79,16 +85,27 @@ app.get("/api/tasks", protect, (req, res) => {
   });
 });
 
+// 🔥 POST /api/tasks - Naya task banayein (with Real ID)
 app.post("/api/tasks", protect, (req, res) => {
   const newTask = req.body;
-  res
-    .status(201)
-    .json({ message: "Task created", task: { id: "new_id", ...newTask } });
+  // Realistic ID generate karein
+  const id = crypto.randomBytes(4).toString("hex");
+  const taskWithId = { id, ...newTask };
+
+  res.status(201).json({
+    message: "Task created",
+    task: taskWithId,
+  });
 });
 
+// 🔥 PUT /api/tasks/:id/toggle
 app.put("/api/tasks/:id/toggle", protect, (req, res) => {
   res.status(200).json({ message: "Task toggled successfully" });
 });
+
+// ==========================================
+// OTHER ROUTES
+// ==========================================
 
 app.get("/api/habits", protect, (req, res) => {
   res.status(200).json({

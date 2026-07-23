@@ -147,7 +147,7 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                                       String category,
                                       String estimate,
                                     ) {},
-                              ), // We'll update the sheet to use ViewModel
+                              ),
                             );
                           },
                           child: const Icon(
@@ -372,7 +372,6 @@ class _TasksScreenState extends ConsumerState<TasksScreen>
                             ).animate(animation),
                             child: _TaskCard(
                               task: task,
-                              // 👇 ViewModel ko call karein
                               onToggle: () => ref
                                   .read(tasksViewModelProvider.notifier)
                                   .toggleTaskCompletion(task.id),
